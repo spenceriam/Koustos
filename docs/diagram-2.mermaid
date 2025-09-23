@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant FE as Next.js Client
+    participant CF as Convex Function
+    participant DB as Convex Database
+
+    FE->>CF: submit PAT + repo + email
+    Note over CF: AES-256 encrypt using ENCRYPTION_KEY (env)
+    CF->>CF: encrypt PAT in memory
+    CF->>DB: store {encryptedPAT, repoOwner, repoName, maintainerEmail, slug}
+    CF-->>FE: return {slug, url}
+
+    Note over CF,DB: Decrypt only when creating GitHub issue

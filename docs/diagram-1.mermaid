@@ -1,0 +1,25 @@
+graph TD
+    subgraph Client
+        A[Next.js 14 (Vercel)<br/>koustos.dev]
+    end
+    subgraph Vercel
+        B[Vercel Edge/SSR]
+    end
+    subgraph Convex
+        C[Convex Functions<br/>setup / report / ai / finalize]
+        G[(Convex Database:<br/>Projects, Reports)]
+        H[(Secrets/Env: ENCRYPTION_KEY)]
+    end
+    subgraph External
+        J[GitHub REST v3]
+        K[OpenAI API]
+        L[Resend API]
+    end
+
+    A <--> B
+    B <--> C
+    C --> K
+    C --> J
+    C --> L
+    C --> G
+    G -.-> H

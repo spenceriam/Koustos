@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koustos - Wireframes</title>
+    <style>
+        :root {
+            /* Color Palette */
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            
+            /* Sandstone colors - warm sandy/amber tones */
+            --sand-50: #fefce8;
+            --sand-100: #fef3c7;
+            --sand-200: #fde68a;
+            --sand-300: #fcd34d;
+            --sand-400: #fbbf24;
+            --sandstone-base: #f59e0b;
+            --sandstone-dark: #d97706;
+            
+            /* Convex accent colors - orange from logo */
+            --convex-orange: #ff6b35;
+            --convex-orange-light: #ff8f66;
+            --convex-orange-dark: #ea580c;
+            --convex-orange-glow: rgba(255, 107, 53, 0.1);
+            
+            /* GitHub-like colors */
+            --gh-border: #d0d7de;
+            --gh-success: #1a7f37;
+            --gh-label: #0969da;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--sand-100) 0%, var(--sand-200) 100%);
+            color: var(--slate-800);
+            line-height: 1.5;
+        }
+
+        .page-container {
+            min-height: 100vh;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 107, 53, 0.02) 10px,
+                    rgba(255, 107, 53, 0.02) 20px
+                );
+        }
+
+        .wireframe-section {
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--sand-300);
+            padding-bottom: 30px;
+        }
+
+        .wireframe-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, var(--slate-800), var(--convex-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 40px 0 20px;
+            text-align: center;
+        }
+
+        /* Header */
+        .header {
+            background: var(--slate-900);
+            border-bottom: 1px solid var(--slate-700);
+            padding: 12px 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--slate-300);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--convex-orange), var(--convex-orange-light));
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Setup Page */
+        .setup-card {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gh-border);
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .art-banner {
+            height: 120px;
+            background: linear-gradient(135deg, var(--sand-200), var(--sandstone-base));
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--slate-600);
+            font-size: 14px;
+            border: 2px dashed var(--sandstone-dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--slate-700);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--gh-border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--slate-50);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--convex-orange);
+            box-shadow: 0 0 0 3px var(--convex-orange-glow);
+        }
+
+        .help-link {
+            font-size: 12px;
+            color: var(--convex-orange);
+            text-decoration: none;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--convex-orange);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--convex-orange-dark);
+        }
+
+        /* Success State */
+        .success-card {
+            background: linear-gradient(135deg, var(--slate-50), white);
+            border: 2px solid var(--convex-orange-light);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .url-display {
+            background: var(--slate-900);
+            color: var(--convex-orange-light);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 16px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copy-btn {
+            background: var(--convex-orange);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Report Page */
+        .report-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .chat-section {
+            background: white;
+            border: 1px solid var(--gh-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .chat-header {
+            border-bottom: 1px solid var(--gh-border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .reporter-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chat-messages {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: linear-gradient(to bottom, var(--sand-100), var(--sand-50));
+            border-radius: 8px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .message-user {
+            background: white;
+            border: 1px solid var(--gh-border);
+            margin-left: 40px;
+        }
+
+        .message-ai {
+            background: linear-gradient(135deg, var(--slate-50), var(--slate-100));
+            border: 1px solid var(--slate-200);
+            margin-right: 40px;
+        }
+
+        .message-label {
+            font-size: 12px;
+            color: var(--slate-500);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .chat-input-area {
+            border-top: 1px solid var(--gh-border);
+            padding-top: 16px;
+        }
+
+        .chat-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 2px solid var(--gh-border);
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--convex-orange);
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: white;
+            border: 1px solid var(--gh-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gh-border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--slate-900);
+        }
+
+        .edit-toggle {
+            background: none;
+            border: 1px solid var(--gh-border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--slate-700);
+        }
+
+        .edit-toggle:hover {
+            background: var(--slate-50);
+        }
+
+        /* GitHub-style Issue Preview */
+        .issue-preview {
+            background: var(--slate-50);
+            border: 1px solid var(--gh-border);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .issue-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--slate-900);
+        }
+
+        .issue-labels {
+            margin-bottom: 16px;
+        }
+
+        .issue-label {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--gh-label);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 6px;
+        }
+
+        .issue-body {
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--slate-700);
+        }
+
+        .issue-body h2 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: var(--slate-900);
+        }
+
+        .issue-section {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--sand-200);
+        }
+
+        .issue-footer {
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gh-border);
+            font-size: 12px;
+            color: var(--slate-500);
+            font-style: italic;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--gh-success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 10px 16px;
+            background: white;
+            color: var(--slate-700);
+            border: 1px solid var(--gh-border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Tiled Background Pattern Placeholder */
+        .tiled-bg-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                var(--sand-100) 0deg 90deg,
+                var(--sandstone-base) 90deg 180deg
+            );
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .note {
+            background: var(--convex-orange-light);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--slate-900);
+            border-top: 1px solid var(--slate-700);
+            padding: 20px 0;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copyright {
+            color: var(--slate-500);
+            font-size: 13px;
+        }
+
+        .footer-link {
+            color: var(--slate-400);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--convex-orange-light);
+        }
+
+        @media (max-width: 768px) {
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Header (shared across all pages) -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <span style="font-size: 14px; color: var(--slate-400);">[Your Logo Here]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIREFRAME 1: Developer Setup Page -->
+        <div class="wireframe-section">
+            <h2 class="section-title">Page 1: Developer Setup (/setup)</h2>
+            <div class="container">
+                <div class="setup-card">
+                    <div class="art-banner">[Placeholder: Convex-style geometric pattern on sandstone]</div>
+                    
+                    <h1 style="font-size: 24px; margin-bottom: 8px;">Get Your Feedback URL</h1>
+                    <p style="color: var(--slate-600); margin-bottom: 24px; font-size: 14px;">
+                        Let anyone report bugs without a GitHub account
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label">GitHub Personal Access Token</label>
+                        <input type="password" class="form-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+                        <a href="#" class="help-link">How do I get this? →</a>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Repository</label>
+                        <input type="text" class="form-input" placeholder="facebook/react" />
+                        <span style="font-size: 12px; color: var(--slate-500);">Format: owner/repo</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Email (for notifications)</label>
+                        <input type="email" class="form-input" placeholder="dev@example.com" />
+                    </div>
+
+                    <button class="btn-primary">Generate Feedback URL →</button>
+                </div>
+
+                <!-- Success State -->
+                <div class="setup-card" style="margin-top: 40px;">
+                    <div class="success-card">
+                        <h2 style="font-size: 20px; margin-bottom: 16px; color: var(--convex-orange);">
+                            ✓ Your Feedback URL is Ready!
+                        </h2>
+                        
+                        <div class="url-display">
+                            <span>koustos.dev/f/x7k9m2p4</span>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+
+                        <div class="note">
+                            [Placeholder: Quick share buttons - Twitter, README snippet, Embed code]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIREFRAME 2: Bug Report Page -->
+        <div class="wireframe-section">
+            <h2 class="section-title">Page 2: Bug Report (/f/[slug])</h2>
+            <div class="container">
+                <div class="art-banner" style="margin-bottom: 24px;">
+                    [Placeholder: Tiled sandstone pattern with Convex orange accent]
+                </div>
+                
+                <div class="report-container">
+                    <!-- Left: Chat/Input Section -->
+                    <div class="chat-section">
+                        <div class="chat-header">
+                            <h2 style="font-size: 18px; margin-bottom: 4px;">Report a Bug</h2>
+                            <p style="font-size: 14px; color: var(--slate-600);">Repository: facebook/react</p>
+                        </div>
+
+                        <div class="reporter-info">
+                            <div class="form-group">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" class="form-input" placeholder="Jane Doe" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Your Email</label>
+                                <input type="email" class="form-input" placeholder="jane@example.com" />
+                            </div>
+                        </div>
+
+                        <div class="chat-messages">
+                            <div class="message message-user">
+                                <div class="message-label">You</div>
+                                <div>The chart is broken on mobile when I rotate the screen</div>
+                            </div>
+                            
+                            <div class="message message-ai">
+                                <div class="message-label">Koustos AI</div>
+                                <div>I need two details to help create a clear bug report:
+                                
+1. What specific device and browser are you using, and what exact steps lead to this issue?
+
+2. What would need to be fixed for you to consider this bug resolved?</div>
+                            </div>
+
+                            <div class="message message-user">
+                                <div class="message-label">You</div>
+                                <div>iPhone 13 Safari. Open chart page, rotate to landscape. The bars should resize but they disappear completely. It's fixed when bars properly show in landscape mode.</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <textarea class="chat-input" placeholder="Describe the bug you're experiencing..."></textarea>
+                            <div style="display: flex; justify-content: space-between; margin-top: 12px;">
+                                <span style="font-size: 12px; color: var(--slate-500);">Press Enter to send</span>
+                                <button class="btn-primary" style="width: auto; padding: 8px 16px;">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Issue Preview -->
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <div class="preview-title">Issue Preview</div>
+                            <button class="edit-toggle">Edit Mode</button>
+                        </div>
+
+                        <div class="issue-preview">
+                            <div class="issue-title">Chart bars disappear on mobile landscape rotation</div>
+                            
+                            <div class="issue-labels">
+                                <span class="issue-label">bug</span>
+                                <span class="issue-label">via-koustos</span>
+                            </div>
+
+                            <div class="issue-body">
+<div class="issue-section">
+<strong>## Description</strong>
+The chart component fails to properly render bars when an iPhone is rotated from portrait to landscape orientation. The bars disappear completely instead of resizing to fit the new viewport dimensions.
+</div>
+
+<div class="issue-section">
+<strong>## Environment</strong>
+- Device: iPhone 13
+- Browser: Safari (latest)
+- Orientation: Landscape
+</div>
+
+<div class="issue-section">
+<strong>## Steps to Reproduce</strong>
+1. Open the chart page on iPhone 13 Safari
+2. View chart in portrait mode (bars display correctly)
+3. Rotate device to landscape orientation
+4. Observe that chart bars disappear completely
+</div>
+
+<div class="issue-section">
+<strong>## Expected Behavior</strong>
+Chart bars should resize and remain visible when device orientation changes to landscape mode.
+</div>
+
+<div class="issue-section">
+<strong>## Resolution Criteria</strong>
+This bug will be resolved when chart bars properly display and resize in landscape mode on iPhone Safari without disappearing.
+</div>
+                            </div>
+
+                            <div class="issue-footer">
+                                Reported via Koustos
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-cancel">Cancel</button>
+                            <button class="btn-submit">Create Issue on GitHub</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIREFRAME 3: Edit Mode -->
+        <div class="wireframe-section">
+            <h2 class="section-title">Edit Mode View (Same page, editable state)</h2>
+            <div class="container">
+                <div class="report-container">
+                    <div class="chat-section" style="opacity: 0.5;">
+                        <div class="note">Chat disabled during edit mode</div>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <div class="preview-title">Edit Issue</div>
+                            <button class="edit-toggle" style="background: var(--convex-orange); color: white;">Preview Mode</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Issue Title</label>
+                            <input type="text" class="form-input" value="Chart bars disappear on mobile landscape rotation" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Issue Body (Markdown supported)</label>
+                            <textarea class="form-input" style="min-height: 400px; font-family: monospace; font-size: 13px;">## Description
+The chart component fails to properly render bars when an iPhone is rotated from portrait to landscape orientation.
+
+## Environment
+- Device: iPhone 13
+- Browser: Safari (latest)
+- Orientation: Landscape
+
+## Steps to Reproduce
+1. Open the chart page on iPhone 13 Safari
+2. View chart in portrait mode
+3. Rotate device to landscape
+4. Observe bars disappear
+
+## Expected Behavior
+Chart bars should resize and remain visible.
+
+## Resolution Criteria
+Bug resolved when bars display properly in landscape mode.</textarea>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-cancel">Cancel Edit</button>
+                            <button class="btn-submit">Create Issue with Edits</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design System Notes -->
+        <div class="wireframe-section">
+            <h2 class="section-title">Design System & Placeholder Notes</h2>
+            <div class="container" style="max-width: 800px;">
+                <div style="background: white; padding: 32px; border-radius: 12px; border: 1px solid var(--gh-border);">
+                    <h3 style="margin-bottom: 20px;">Color Palette</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px;">
+                        <div style="text-align: center;">
+                            <div style="height: 60px; background: var(--slate-900); border-radius: 8px;"></div>
+                            <small>Slate 900 (Headers)</small>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="height: 60px; background: linear-gradient(135deg, var(--sand-200), var(--sandstone-base)); border-radius: 8px;"></div>
+                            <small>Sandstone (Backgrounds)</small>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="height: 60px; background: var(--convex-orange); border-radius: 8px;"></div>
+                            <small>Convex Orange (CTAs)</small>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="height: 60px; background: var(--gh-success); border-radius: 8px;"></div>
+                            <small>GitHub Green (Submit)</small>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 20px;">Art Placeholders Needed</h3>
+                    <ul style="line-height: 2; color: var(--slate-700);">
+                        <li><strong>Hero Banner Pattern:</strong> Geometric Convex-style pattern with orange accents on sandstone base</li>
+                        <li><strong>Background Tile:</strong> Subtle diagonal lines at 45° with 2% opacity orange (#ff6b35)</li>
+                        <li><strong>Success State Illustration:</strong> Simplified icon showing GitHub issue with checkmark</li>
+                        <li><strong>Empty State Art:</strong> Minimalist illustration for when no messages exist yet</li>
+                        <li><strong>Loading Animation:</strong> Pulsing Convex logo or dots in orange gradient</li>
+                        <li><strong>404 Page Art:</strong> Lost robot or similar playful illustration in brand colors</li>
+                    </ul>
+
+                    <h3 style="margin-bottom: 20px; margin-top: 32px;">Interactive Elements</h3>
+                    <ul style="line-height: 2; color: var(--slate-700);">
+                        <li><strong>Focus States:</strong> Orange glow (3px spread, 10% opacity)</li>
+                        <li><strong>Hover Effects:</strong> Subtle elevation with 2px shadow</li>
+                        <li><strong>Transitions:</strong> All at 200ms ease-out</li>
+                        <li><strong>Loading States:</strong> Skeleton screens in sand-200</li>
+                        <li><strong>Success Animation:</strong> Checkmark draw-in with confetti particles</li>
+                    </ul>
+
+                    <h3 style="margin-bottom: 20px; margin-top: 32px;">Typography</h3>
+                    <ul style="line-height: 2; color: var(--slate-700);">
+                        <li><strong>Headers:</strong> System font stack, 600-700 weight</li>
+                        <li><strong>Body:</strong> 14px base, 1.5-1.6 line height</li>
+                        <li><strong>Code:</strong> Monospace for URLs and markdown</li>
+                        <li><strong>Labels:</strong> 12px uppercase with 0.5px letter-spacing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer (shared across all pages) -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-bottom" style="padding-top: 0;">
+                    <div class="footer-copyright">
+                        © 2025 Lion Mystic
+                    </div>
+                    <div>
+                        <a href="https://x.com/spencer_i_am" class="footer-link">
+                            @spencer_i_am
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
