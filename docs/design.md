@@ -100,42 +100,27 @@ sequenceDiagram
 
 Decryption is symmetric; key never leaves Convex runtime.
 
-## 5. API Contract (OpenAPI 3.1 snippet)
+## 5. Function Contracts (Convex)
 
-### POST /setup
-Request:
-```json
-{
-  "pat": "ghp_***",
-  "repo": "owner/repo",
-  "email": "maintainer@example.com"
-}
-```
-Response `201`:
-```json
-{
-  "slug": "a1b2c3d4",
-  "url": "https://koustos.dev/f/a1b2c3d4"
-}
-```
-Error `400` – invalid repo format  
-Error `403` – PAT lacks `public_repo` scope
+These are conceptual contracts invoked from the Next.js app via Convex functions (not public REST endpoints):
 
-### POST /report/{slug}/finalize
-Request:
-```json
-{
-  "reportId": "uuid",
-  "editMarkdown": "optional diff"
-}
-```
-Response `201`:
-```json
-{
-  "issueUrl": "https://github.com/owner/repo/issues/42"
-}
-```
-Error `429` – rate limit exceeded
+### setup.createProject(pat, repo, email) → { slug, url }
+- Validates repo format and PAT scopes (`public_repo` for public repos)
+- Encrypts PAT with AES-256 using `ENCRYPTION_KEY`
+- Stores project and returns shareable URL `https://koustos.dev/f/{slug}`
+
+### report.start(slug, name, email, description) → { reportId, ai_q1 }
+- Validates inputs and email format
+- Enforces rate limit (10/hour per slug)
+- Creates initial report and returns first AI prompt
+
+### ai.respond(reportId, answer) → { nextQuestion? , formattedDraft? }
+- Progresses AI state machine; stops after exactly two follow-up questions
+- When ready, returns a formatted markdown draft
+
+### finalize.submit(reportId, edits?) → { issueUrl }
+- Decrypts PAT, creates GitHub issue, stores issue number
+- Sends emails to maintainer and reporter via Resend
 
 ## 6. AI Conversation Logic
 Prompt template (system):
@@ -144,10 +129,10 @@ You are a bug triage assistant. Ask concise clarifying questions.
 Stop after two questions. Do not greet or thank. Language: English.
 ```
 
-State machine stored in DynamoDB attribute `aiState`:
+State is persisted in Convex on the `reports` document via fields `ai_q1`, `ai_a1`, `ai_q2`, `ai_a2` and `formatted_issue`.
 - `WAIT_DESC` → `Q1_SENT` → `A1_RECEIVED` → `Q2_SENT` → `A2_RECEIVED` → `READY`
 
-After `READY` the Lambda refuses further AI calls.
+After `READY` the Convex function refuses further AI calls.
 
 ## 7. Rate Limiting & Abuse Protection
 - Server-side per-slug counter in Convex with a 1-hour fixed window (10 reports/hour).
@@ -164,54 +149,29 @@ After `READY` the Lambda refuses further AI calls.
 All 5xx responses return `x-request-id` header for support.
 
 ## 9. Security Considerations
-- PAT encrypted with envelope encryption (KMS CMK rotation yearly).
-- Lambda execution role least-privilege: only `dynamodb:GetItem` on Projects, `kms:Decrypt` on PAT key.
-- Cloudflare Pages uses HSTS, CSP `default-src 'self'; script-src 'self' 'unsafe-inline'`.
-- No cookies; JWT signed with ES256 (public key pinned in Functions).
+- PAT encrypted with AES-256 using `ENCRYPTION_KEY` in Convex; key never leaves server runtime.
+- Least-privilege access within Convex; only necessary tables/functions available.
+- Apply secure headers via Next.js (HSTS, CSP as appropriate for Vercel hosting).
+- No client-side secrets; PAT never sent to the client.
 
 ## 10. Testing Strategy
+Per AGENTS.md, testing is deferred until explicitly requested.
 
-### 10.1 Unit (Jest + PyTest)
-- Encryption/decryption round-trip.
-- AI prompt token count ≤ 300.
-- Markdown template rendering.
+When requested:
+- Unit: Jest for Convex functions (encryption round-trip, token caps, markdown rendering)
+- Integration: Mock GitHub/OpenAI/Resend HTTP calls
+- E2E: Cypress for setup ≤30 s, report flow ≤2 min, rate-limit block on 11th
+No CI setup in MVP unless explicitly requested.
 
-### 10.2 Integration (LocalStack + WireMock)
-- Lambda → LocalStack DynamoDB.
-- GitHub Proxy → WireMock GitHub API.
-- Mailer → Resend sandbox endpoint.
-
-### 10.3 End-to-End (Cypress)
-- Setup under 30 s timer assertion.
-- Reporter flow under 2 min.
-- 11th report blocked.
-- Email received within 10 s (MailHog).
-
-### 10.4 Performance (k6)
-- 100 concurrent setups → p(90) latency ≤ 30 s.
-- 500 reports/min across 50 projects → no 429 unless >10/h per slug.
-
-### 10.5 Chaos (Gremlin)
-- Kill Lambda AZ → auto-retry ≤ 3x, still meets N2.
-- KMS throttle → circuit breaker open, fallback “GitHub unavailable”.
-
-## 11. Deployment & CI/CD
-- GitHub Actions:
-  - PR → lint + unit + integration.
-  - Merge → deploy to Vercel Preview.
-  - Tag `v*` → promote to Vercel Production; Convex deploy as part of pipeline.
-- Environment variables managed via Vercel/Convex, rotated periodically.
+## 11. Deployment
+- MVP deploys are manual: Vercel for the Next.js app, Convex deploy via CLI.
+- No CI/CD pipelines in MVP per Development Lifecycle Rules.
+- Environment variables managed in Vercel/Convex; never committed.
 
 ## 12. Observability
-- Logs & metrics: Vercel logs, Convex Observability.
-- Dashboards:
-  - Setup latency p50/p90/p99
-  - Cost per report (OpenAI tokens + Resend)
-  - Rate-limit hits per slug
-- Alerts (via GitHub Actions + external notifier):
-  - p90 setup > 30 s
-  - p90 report > 2 min
-  - Any 5xx > 1% in 10 min
+- Use Vercel logs and Convex Observability for runtime diagnostics.
+- Track (manually) key metrics: setup latency, report E2E latency, rate-limit hits.
+- No automated alerting in MVP.
 
 ## 13. Future Extensibility (out of MVP)
 - Multi-language support (i18n keys already isolated).
