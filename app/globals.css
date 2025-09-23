@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f8fafc;
+  --fg: #0f172a;
+}
+
+html, body { height: 100%; }
+body { @apply bg-[var(--bg)] text-[var(--fg)]; }
+* { box-sizing: border-box; }
+
+
