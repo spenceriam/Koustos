@@ -2,7 +2,7 @@
 
 Turn shareable links into structured GitHub issues without requiring reporters to have GitHub accounts. Built with Next.js (Vercel), Convex, OpenAI, and Resend.
 
-![Screenshot placeholder](./@logo_transparent.png)
+![Screenshot placeholder](./assets/@logo_white.png)
 
 ## Quick Start
 

@@ -181,8 +181,9 @@ async function createIssue({ owner, repo, pat, title, body }: {
 - Update `docs/*` and diagrams when architectures or flows change
 
 ## Assets
-- Logo: `@logo_transparent.png` at repo root. Use in headers, emails (if requested), and previews.
-- Patterned wallpaper: `@tile_pattern.png` at repo root. Use as background for wireframes and optional UI accents.
+- Logo (white): `assets/@logo_white.png`.
+- Logo (original transparent): `assets/logo_transparent.png`.
+- Patterned wallpaper: `assets/tile_pattern.png`.
 
 ## Known Pitfalls
 - Never expose PAT to the client, even transiently

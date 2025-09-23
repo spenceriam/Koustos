@@ -4,7 +4,11 @@ param(
 )
 
 if (-not $InputPath -or -not (Test-Path $InputPath)) {
-  if (Test-Path "@logo_transparent.png") {
+  if (Test-Path "assets/@logo_white.png") {
+    $InputPath = "assets/@logo_white.png"
+  } elseif (Test-Path "assets/logo_transparent.png") {
+    $InputPath = "assets/logo_transparent.png"
+  } elseif (Test-Path "@logo_transparent.png") {
     $InputPath = "@logo_transparent.png"
   } elseif (Test-Path "logo_transparent.png") {
     $InputPath = "logo_transparent.png"
@@ -15,7 +19,7 @@ if (-not $InputPath -or -not (Test-Path $InputPath)) {
 }
 
 if (-not $OutputPath) {
-  $OutputPath = "@logo_transparent.png"
+  $OutputPath = "assets/@logo_white.png"
 }
 
 Add-Type -AssemblyName System.Drawing
