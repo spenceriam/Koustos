@@ -40,6 +40,7 @@ graph TD
 - No client-side secrets; calls Convex functions for server actions.
 - Styling: TailwindCSS, no emoji font.
 - Accessibility: WCAG 2.1 AA.
+- Shared components: `ReportForm`, `IssuePreview`, `CopyUrl`, Toast provider for UI states.
 
 ### 3.2 Convex Functions
 - `setup.createProject(pat, repo, email)` → validate PAT via GitHub API, encrypt PAT, store project, return slug/url.
@@ -53,6 +54,7 @@ Rate limit enforced in Convex using per-slug counters (10 reports/hour).
 - OpenAI via official SDK from Convex functions (system prompt enforces 2 Qs, English-only, no emojis).
 - GitHub REST v3 for issue creation (Authorization: token `PAT`).
 - Resend for transactional emails.
+- No-emoji sanitization is enforced on issue title and body before submission.
 
 ## 4. Data Model (Convex)
 

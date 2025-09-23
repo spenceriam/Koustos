@@ -86,7 +86,8 @@ Enable open-source maintainers to collect structured bug reports from non-GitHub
 - [ ] Both emails are sent within 10 s of issue creation.  
 - [ ] PAT is never sent to the client.  
 - [ ] Rate limit blocks the 11th report in an hour.  
-- [ ] No emojis appear in any UI or email.
+- [ ] No emojis appear in any UI or email.  
+- [ ] Accessibility: form inputs labeled, buttons announce state, errors use role="alert".
 
 ## 6. Platform Decisions
 - Database: Convex (stores `projects` and `reports`, encrypted PAT at rest).  

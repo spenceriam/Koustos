@@ -27,6 +27,8 @@ ENCRYPTION_KEY= # 32-byte hex for AES-256
 NEXT_PUBLIC_URL=https://koustos.dev
 ```
 
+You can copy `.env.example` to `.env` locally and fill in the values.
+
 ### 4) Run locally (when ready)
 ```bash
 # Terminal A (Convex)
@@ -35,6 +37,11 @@ NEXT_PUBLIC_URL=https://koustos.dev
 # Terminal B (Next.js)
 # npm run dev
 ```
+
+### Notes
+- No emojis in UI, emails, or issue titles/bodies.
+- Public GitHub repos only; English-only AI prompts.
+- Rate limit: 10 reports/hour per project (server-side in Convex).
 
 ## How to Use
 
