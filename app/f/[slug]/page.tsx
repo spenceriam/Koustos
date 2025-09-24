@@ -21,7 +21,8 @@ export default function ReportPage({ params }: { params: { slug: string } }) {
       // Placeholder for Convex call
       setQ("What device and browser are you using, and what steps lead to the issue?");
     } catch (e: any) {
-      setError(e.message || "Failed");
+      const msg = String(e?.message || "Failed");
+      setError(msg.includes("Too many reports") ? "Too many reports. Try again later." : msg);
     } finally {
       setLoading(false);
     }
