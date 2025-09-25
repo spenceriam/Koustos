@@ -2,7 +2,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getOpenAI, MODEL, MAX_TOKENS } from "../lib/openai";
-const openai = getOpenAI();
 
 function sanitizeNoEmoji(text: string): string {
   // Remove common emoji ranges; conservative to ensure none leak
@@ -53,6 +52,7 @@ export const respond = mutation({
       },
     ];
 
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: MODEL,
       messages: prompt,
