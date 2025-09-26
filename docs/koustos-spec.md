@@ -73,7 +73,7 @@ Clean form with conversational UI:
 AI Flow (GPT-4o-mini):
 ```javascript
 const completion = await openai.chat.completions.create({
-  model: "gpt-4o-mini",
+  model: "gpt-5-nano-2025-08-07",
   messages: [{
     role: "system",
     content: "Bug report assistant. NO EMOJIS. Ask exactly 2 questions: 1) Device/browser and steps to reproduce 2) What would resolve this bug for you? Format: Description, Environment, Steps to Reproduce, Expected Behavior, Resolution Criteria. Professional tone. Under 150 words."

@@ -89,7 +89,7 @@ npm run dev
 - Restrict PII to what’s necessary (reporter name, email)
 
 ## Tools & Integrations
-- OpenAI SDK: model `gpt-4o-mini` preferred for cost; keep tokens low
+- OpenAI SDK: model `gpt-5-nano-2025-08-07` preferred for cost; keep tokens low
 - GitHub REST v3: `POST /repos/{owner}/{repo}/issues` for issue creation
 - Resend: two emails (maintainer, reporter); professional tone, no emojis
 - Convex: schema for `projects` and `reports`; server-side encryption/decryption
@@ -133,7 +133,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 export async function formatReport(userInput: string) {
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-nano-2025-08-07",
     messages: [
       {
         role: "system",

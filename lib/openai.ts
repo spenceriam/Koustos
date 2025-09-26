@@ -6,7 +6,7 @@ export function getOpenAI() {
   return new OpenAI({ apiKey: key });
 }
 
-export const MODEL = "gpt-4o-mini" as const;
+export const MODEL = "gpt-5-nano-2025-08-07" as const;
 export const MAX_TOKENS = 250;
 
 
