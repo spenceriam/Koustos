@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { clampLength } from "../lib/validation";
 
@@ -48,6 +48,41 @@ export const start = mutation({
     const ai_q1 = "What device and browser are you using, and what steps lead to the issue?";
     await ctx.db.patch(reportId, { ai_q1 });
     return { reportId, ai_q1 };
+  },
+});
+
+export const getById = query({
+  args: { reportId: v.id("reports") },
+  handler: async (ctx, { reportId }) => {
+    return await ctx.db.get(reportId);
+  },
+});
+
+export const setA1Q2 = mutation({
+  args: { reportId: v.id("reports"), a1: v.string(), q2: v.string() },
+  handler: async (ctx, { reportId, a1, q2 }) => {
+    await ctx.db.patch(reportId, { ai_a1: a1, ai_q2: q2 });
+  },
+});
+
+export const setA2 = mutation({
+  args: { reportId: v.id("reports"), a2: v.string() },
+  handler: async (ctx, { reportId, a2 }) => {
+    await ctx.db.patch(reportId, { ai_a2: a2 });
+  },
+});
+
+export const setFormattedIssue = mutation({
+  args: { reportId: v.id("reports"), formatted: v.string() },
+  handler: async (ctx, { reportId, formatted }) => {
+    await ctx.db.patch(reportId, { formatted_issue: formatted, updated_at: Date.now() });
+  },
+});
+
+export const setIssueNumber = mutation({
+  args: { reportId: v.id("reports"), number: v.number() },
+  handler: async (ctx, { reportId, number }) => {
+    await ctx.db.patch(reportId, { github_issue_number: number, updated_at: Date.now() });
   },
 });
 

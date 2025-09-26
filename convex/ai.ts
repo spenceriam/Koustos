@@ -1,5 +1,5 @@
 "use node";
-import { mutation } from "./_generated/server";
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { getOpenAI, MODEL, MAX_TOKENS } from "../lib/openai";
 
@@ -8,7 +8,7 @@ function sanitizeNoEmoji(text: string): string {
   return text.replace(/[\p{Emoji}\p{Extended_Pictographic}]/gu, "");
 }
 
-export const respond = mutation({
+export const respond = action({
   args: { reportId: v.id("reports"), answer: v.string() },
   handler: async (ctx, { reportId, answer }) => {
     const report = await ctx.db.get(reportId);

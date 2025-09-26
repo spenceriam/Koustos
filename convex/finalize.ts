@@ -1,5 +1,5 @@
 "use node";
-import { mutation } from "./_generated/server";
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { decryptString } from "./encryption";
 import { Resend } from "resend";
@@ -7,7 +7,7 @@ import { removeEmojis } from "../lib/noEmoji";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const submit = mutation({
+export const submit = action({
   args: { reportId: v.id("reports"), editMarkdown: v.optional(v.string()) },
   handler: async (ctx, { reportId, editMarkdown }) => {
     const report = await ctx.db.get(reportId);
