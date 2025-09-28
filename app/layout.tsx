@@ -36,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               •
             </span>
             <span className="inline-flex items-center gap-1">
+              <span>Built by</span>
               <a
                 href="https://x.com/spencer_i_am"
                 className="underline"
