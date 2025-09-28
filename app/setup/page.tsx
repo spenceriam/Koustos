@@ -27,6 +27,7 @@ export default function SetupPage() {
   const [showPatModal, setShowPatModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const patModalInputRef = useRef<HTMLInputElement | null>(null);
+  const [patVisible, setPatVisible] = useState(false);
   const [repos, setRepos] = useState<GithubRepoSummary[]>([]);
   const [repoSearch, setRepoSearch] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export default function SetupPage() {
     setResult(null);
     setRepos([]);
     setRepoSearch("");
+    setPatVisible(false);
   }
 
   function validateEmailFormat(value: string) {
@@ -75,6 +77,7 @@ export default function SetupPage() {
     setResult(null);
     setRepos([]);
     setRepoSearch("");
+    setPatVisible(false);
 
     try {
       const response = await fetch("/api/github/repos", {
@@ -89,6 +92,7 @@ export default function SetupPage() {
         );
         setShowPatModal(true);
         setPat("");
+        setPatVisible(false);
         setPatValidated(false);
         setRepoCount(null);
         return;
@@ -133,6 +137,7 @@ export default function SetupPage() {
     setResult(null);
     setRepos([]);
     setRepoSearch("");
+    setPatVisible(false);
 
     try {
       const res = await fetch("/api/setup", {
@@ -158,6 +163,14 @@ export default function SetupPage() {
 
   function handleRepoSelect(repoItem: GithubRepoSummary) {
     setRepo(`${repoItem.owner}/${repoItem.name}`);
+  }
+
+  function beginRevealPat() {
+    setPatVisible(true);
+  }
+
+  function endRevealPat() {
+    setPatVisible(false);
   }
 
   return (
@@ -234,11 +247,38 @@ export default function SetupPage() {
             <input
               value={pat}
               onChange={(e) => handlePatChange(e.target.value)}
-              type="password"
+              type={patVisible ? "text" : "password"}
               className="w-full rounded border px-3 py-2"
               placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
               required
             />
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onPointerDown={beginRevealPat}
+                onPointerUp={endRevealPat}
+                onPointerLeave={endRevealPat}
+                onPointerCancel={endRevealPat}
+                onKeyDown={(event) => {
+                  if (event.key === " " || event.key === "Enter") {
+                    event.preventDefault();
+                    beginRevealPat();
+                  }
+                }}
+                onKeyUp={(event) => {
+                  if (event.key === " " || event.key === "Enter") {
+                    endRevealPat();
+                  }
+                }}
+                className="rounded border px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                aria-pressed={patVisible}
+              >
+                Hold to reveal token
+              </button>
+              <span className="text-xs text-slate-500">
+                Release to hide. We never store this token client-side.
+              </span>
+            </div>
             <div className="mt-2 flex items-center gap-3">
               <button
                 type="button"
