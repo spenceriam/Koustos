@@ -16,14 +16,6 @@ export default function HomePage() {
           >
             Generate Feedback URL
           </Link>
-          <a
-            href="https://dashboard.convex.dev"
-            className="rounded border px-4 py-2 font-medium text-slate-700"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Convex Dashboard
-          </a>
         </div>
       </section>
 
