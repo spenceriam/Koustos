@@ -1,8 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+interface GithubRepoSummary {
+  id: number;
+  fullName: string;
+  private: boolean;
+  owner: string;
+  name: string;
+}
 
 interface GithubReposResponse {
-  repos?: { id: number }[];
+  repos?: GithubRepoSummary[];
 }
 
 export default function SetupPage() {
@@ -19,6 +27,8 @@ export default function SetupPage() {
   const [showPatModal, setShowPatModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const patModalInputRef = useRef<HTMLInputElement | null>(null);
+  const [repos, setRepos] = useState<GithubRepoSummary[]>([]);
+  const [repoSearch, setRepoSearch] = useState("");
 
   useEffect(() => {
     if (showPatModal) {
@@ -31,6 +41,8 @@ export default function SetupPage() {
     setPatValidated(false);
     setRepoCount(null);
     setResult(null);
+    setRepos([]);
+    setRepoSearch("");
   }
 
   async function validatePat() {
@@ -42,6 +54,8 @@ export default function SetupPage() {
     setIsValidatingPat(true);
     setError(null);
     setResult(null);
+    setRepos([]);
+    setRepoSearch("");
 
     try {
       const response = await fetch("/api/github/repos", {
@@ -66,7 +80,9 @@ export default function SetupPage() {
       }
 
       const data = (await response.json()) as GithubReposResponse;
-      const count = Array.isArray(data.repos) ? data.repos.length : 0;
+      const list = Array.isArray(data.repos) ? data.repos : [];
+      const count = list.length;
+      setRepos(list);
       setRepoCount(count);
       setPatValidated(true);
       setShowPatModal(false);
@@ -74,6 +90,7 @@ export default function SetupPage() {
       setError(err?.message || "Unable to validate token. Please try again.");
       setPatValidated(false);
       setRepoCount(null);
+      setRepos([]);
     } finally {
       setIsValidatingPat(false);
     }
@@ -90,6 +107,8 @@ export default function SetupPage() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setRepos([]);
+    setRepoSearch("");
 
     try {
       const res = await fetch("/api/setup", {
@@ -105,6 +124,16 @@ export default function SetupPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const filteredRepos = useMemo(() => {
+    if (!repoSearch.trim()) return repos;
+    const query = repoSearch.trim().toLowerCase();
+    return repos.filter((repo) => repo.fullName.toLowerCase().includes(query));
+  }, [repoSearch, repos]);
+
+  function handleRepoSelect(repoItem: GithubRepoSummary) {
+    setRepo(`${repoItem.owner}/${repoItem.name}`);
   }
 
   return (
@@ -214,6 +243,51 @@ export default function SetupPage() {
               placeholder="owner/repo"
               required
             />
+            {patValidated && (
+              <div className="mt-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-slate-600" htmlFor="repo-search">
+                    Search your repositories
+                  </label>
+                  {repoCount !== null && (
+                    <span className="text-xs text-slate-500">{repoCount} available</span>
+                  )}
+                </div>
+                <input
+                  id="repo-search"
+                  type="search"
+                  value={repoSearch}
+                  onChange={(e) => setRepoSearch(e.target.value)}
+                  className="w-full rounded border px-3 py-2 text-sm"
+                  placeholder="Filter by name"
+                />
+                <div className="max-h-52 overflow-y-auto rounded border bg-white">
+                  {filteredRepos.length === 0 && (
+                    <div className="px-3 py-4 text-sm text-slate-500">No repositories found.</div>
+                  )}
+                  {filteredRepos.map((repoItem) => (
+                    <button
+                      type="button"
+                      key={repoItem.id}
+                      onClick={() => handleRepoSelect(repoItem)}
+                      className="flex w-full items-center justify-between border-b px-3 py-2 text-left text-sm hover:bg-slate-50 last:border-b-0"
+                    >
+                      <span className="font-medium text-slate-700">{repoItem.fullName}</span>
+                      <span
+                        className={`rounded px-2 py-1 text-xs font-semibold ${
+                          repoItem.private ? "bg-slate-200 text-slate-700" : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {repoItem.private ? "Private" : "Public"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500">
+                  Selecting fills the repository field above. Archived repos are hidden automatically.
+                </p>
+              </div>
+            )}
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">
