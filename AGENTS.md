@@ -3,6 +3,10 @@
 This file is for AI agents and automation to work effectively in the Koustos repo. Keep `README.md` human-focused; put agent-facing instructions, commands, guardrails, and examples here.
 
 ## Project Overview
+## Project Stage
+- Currently in test-mode verifying auth flows and setup UX.
+- Maintain focus on maintainers signing in and generating feedback URLs.
+
 Koustos lets non-GitHub users submit structured bug reports via a shareable URL. It formats reports with AI and creates GitHub issues, emailing both maintainer and reporter.
 
 ## Key Technical Decisions (MVP)
@@ -29,7 +33,7 @@ Planned (create as implementation progresses):
 - `/tests` – Jest unit tests; `/e2e` for Cypress
 
 ## Environment Variables
-Define these in Vercel and Convex. Never commit secrets.
+Define these in Vercel and Convex. Never commit secrets. Local `.env.local` must mirror Convex env values for dev auth routes to work.
 
 ```bash
 CONVEX_DEPLOYMENT=

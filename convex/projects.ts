@@ -15,7 +15,7 @@ export const getBySlug = query({
 
 export const createProject = mutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id("user"),
     pat: v.string(),
     repo: v.string(),
     email: v.string(),

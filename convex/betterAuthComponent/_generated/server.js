@@ -7,18 +7,7 @@
  * To regenerate, run `npx convex dev`.
  * @module
  */
-
-import {
-  actionGeneric,
-  httpActionGeneric,
-  queryGeneric,
-  mutationGeneric,
-  internalActionGeneric,
-  internalMutationGeneric,
-  internalQueryGeneric,
-  componentsGeneric,
-} from "convex/server";
-
+import { actionGeneric, httpActionGeneric, queryGeneric, mutationGeneric, internalActionGeneric, internalMutationGeneric, internalQueryGeneric, componentsGeneric, } from "convex/server";
 /**
  * Define a query in this Convex app's public API.
  *
@@ -28,7 +17,6 @@ import {
  * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
  */
 export const query = queryGeneric;
-
 /**
  * Define a query that is only accessible from other Convex functions (but not from the client).
  *
@@ -38,7 +26,6 @@ export const query = queryGeneric;
  * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
  */
 export const internalQuery = internalQueryGeneric;
-
 /**
  * Define a mutation in this Convex app's public API.
  *
@@ -48,7 +35,6 @@ export const internalQuery = internalQueryGeneric;
  * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
  */
 export const mutation = mutationGeneric;
-
 /**
  * Define a mutation that is only accessible from other Convex functions (but not from the client).
  *
@@ -58,7 +44,6 @@ export const mutation = mutationGeneric;
  * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
  */
 export const internalMutation = internalMutationGeneric;
-
 /**
  * Define an action in this Convex app's public API.
  *
@@ -71,7 +56,6 @@ export const internalMutation = internalMutationGeneric;
  * @returns The wrapped action. Include this as an `export` to name it and make it accessible.
  */
 export const action = actionGeneric;
-
 /**
  * Define an action that is only accessible from other Convex functions (but not from the client).
  *
@@ -79,7 +63,6 @@ export const action = actionGeneric;
  * @returns The wrapped function. Include this as an `export` to name it and make it accessible.
  */
 export const internalAction = internalActionGeneric;
-
 /**
  * Define a Convex HTTP action.
  *
@@ -88,3 +71,4 @@ export const internalAction = internalActionGeneric;
  * @returns The wrapped endpoint function. Route a URL path to this function in `convex/http.js`.
  */
 export const httpAction = httpActionGeneric;
+//# sourceMappingURL=server.js.map

@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useAuthenticatedEmail } from "./auth.client";
+import { AuthButtons } from "@/components/AuthButtons";
 
 interface GithubRepoSummary {
   id: number;
@@ -17,6 +19,7 @@ export default function SetupPage() {
   const [pat, setPat] = useState("");
   const [repo, setRepo] = useState("");
   const [email, setEmail] = useState("");
+  const authenticatedEmail = useAuthenticatedEmail();
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +36,10 @@ export default function SetupPage() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [showSummary, setShowSummary] = useState(false);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    setEmail(authenticatedEmail || "");
+  }, [authenticatedEmail]);
 
   useEffect(() => {
     if (showPatModal) {
@@ -238,10 +245,17 @@ export default function SetupPage() {
       )}
 
       <div className="mx-auto max-w-xl">
-        <h1 className="mb-2 text-2xl font-semibold">Get Your Feedback URL</h1>
-        <p className="mb-6 text-sm text-slate-600">
-          Let anyone report bugs without a GitHub account
-        </p>
+        <h1 className="mb-2 text-2l font-semibold">Get Your Feedback URL</h1>
+        <p className="mb-6 text-sm text-slate-600">Signed-in maintainers can re-generate feedback URLs and manage their repositories.</p>
+        <div className="mb-6 rounded border bg-white p-4">
+          <h2 className="text-sm font-semibold">Maintainer sign-in</h2>
+          <p className="mt-1 text-xs text-slate-600">
+            Use a magic link or social sign-in to prefill your maintainer email and access repositories.
+          </p>
+          <div className="mt-3">
+            <AuthButtons />
+          </div>
+        </div>
         <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
           <div>
             <label className="mb-1 block text-sm font-medium">
@@ -402,71 +416,4 @@ export default function SetupPage() {
           </p>
         )}
         {result && (
-          <div className="mt-6 rounded border p-4">
-            <div className="mb-2 text-sm text-slate-600">Your URL</div>
-            <div className="rounded bg-slate-900 px-3 py-2 font-mono text-sm text-slate-200">
-              {result}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {showSummary && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div
-            className="w-full max-w-md rounded bg-white p-6 shadow"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="summary-title"
-          >
-            <h2 className="text-lg font-semibold" id="summary-title">
-              Confirm project details
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Double-check these values before creating your feedback URL.
-            </p>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div>
-                <dt className="font-medium text-slate-600">Repository</dt>
-                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 font-mono text-xs text-slate-700">
-                  {repo || "Not selected"}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-medium text-slate-600">Maintainer email</dt>
-                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 text-slate-700">
-                  {email}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-medium text-slate-600">Token status</dt>
-                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 text-slate-700">
-                  {patValidated ? `Validated (${repoCount ?? 0} repos accessible)` : "Not validated"}
-                </dd>
-              </div>
-            </dl>
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                type="button"
-                className="rounded border px-3 py-2 text-sm"
-                onClick={() => setShowSummary(false)}
-              >
-                Cancel
-              </button>
-              <button
-                ref={confirmButtonRef}
-                type="button"
-                className="rounded bg-[var(--fg)] px-3 py-2 text-sm font-medium text-white"
-                onClick={confirmSubmit}
-              >
-                Confirm and create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-
+          <div className="mt-6 rounded border penteel】【“】【```

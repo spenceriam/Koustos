@@ -1,19 +1,12 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "./betterAuthSchema";
 
 export default defineSchema({
-  users: defineTable({
-    auth_user_id: v.string(),
-    email: v.string(),
-    name: v.optional(v.string()),
-    image_url: v.optional(v.string()),
-    provider: v.union(v.literal("email"), v.literal("google"), v.literal("github")),
-    created_at: v.number(),
-    updated_at: v.optional(v.number()),
-  }).index("by_auth_user_id", ["auth_user_id"]).index("by_email", ["email"]),
+  ...authTables,
 
   projects: defineTable({
-    user_id: v.id("users"),
+    user_id: v.id("user"),
     slug: v.string(),
     github_pat_encrypted: v.string(),
     repo_owner: v.string(),
@@ -26,7 +19,7 @@ export default defineSchema({
     .index("by_user_repo", ["user_id", "repo_owner", "repo_name"]),
 
   shareable_urls: defineTable({
-    user_id: v.id("users"),
+    user_id: v.id("user"),
     project_id: v.id("projects"),
     repo_full_name: v.string(),
     slug: v.string(),

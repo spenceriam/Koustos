@@ -12,30 +12,24 @@ graph TD
     end
     subgraph Vercel
         B[Vercel Edge/SSR]
-        D[Better Auth Client SDK]
     end
     subgraph Convex
         C[Convex Functions<br/>setup / report / ai / finalize / auth]
-        G[(Convex Database:<br/>Users, Projects, ShareableUrls, Reports, Sessions)]
-        H[(Secrets/Env: ENCRYPTION_KEY, BETTER_AUTH_SECRET)]
+        G[(Convex Database:<br/>Better Auth tables + Projects, ShareableUrls, Reports)]
+        H[(Secrets/Env: ENCRYPTION_KEY, BETTER_AUTH_SECRET, OAuth creds)]
     end
     subgraph External
         J[GitHub REST v3]
         K[OpenAI API]
         L[Resend API]
-        M[Better Auth Core]
-        N[OAuth Providers<br/>Google · GitHub]
     end
 
     A <--> B
-    B <--> D
-    D <--> M
-    M <--> C
+    B <--> C
     C --> K
     C --> J
     C --> L
     C --> G
-    M --> N
     G -.-> H
 ```
 
@@ -47,14 +41,13 @@ graph TD
 - Styling: TailwindCSS, no emoji font.
 - Accessibility: WCAG 2.1 AA.
 - Shared components: `ReportForm`, `IssuePreview`, `CopyUrl`, Toast provider for UI states.
-- Better Auth client SDK hydrates user session; wraps App Router layouts with `AuthProvider`.
-- Auth UI provides email entry form (magic link), Google OAuth button, GitHub OAuth button.
-- Setup wizard pre-fills maintainer email from authenticated profile but allows edits before submission.
+- Better Auth client SDK hydrates session context via `AuthProvider`.
+- Setup wizard pre-fills maintainer email from authenticated user profile, allowing edits before submission.
 
 ### 3.2 Auth & Convex Functions
-- `auth.currentUser()` → fetch Better Auth user by `authUserId` stored in Convex `users` table.
-- `auth.ensureSession(ctx)` helper ensures every mutation/query is scoped to the authenticated user (`ctx.auth.userId`).
-- `auth.issueMagicLink(email)` delegates to Better Auth `signIn.magicLink` and triggers Resend email inside Better Auth hook.
+- `authComponent` (Better Auth) exposes session-aware helpers and database adapters.
+- `createAuth(ctx)` configures Better Auth with magic link and social providers.
+- `authComponent.registerRoutes` mounts HTTP handlers in `convex/http.ts` with CORS enabled.
 
 ### 3.3 Core Convex Functions
 - `setup.createProject(pat, repo, email)` → validate PAT via GitHub API, encrypt PAT, store project under `user_id`, return slug/url.
@@ -64,27 +57,20 @@ graph TD
 
 Rate limit enforced in Convex using per-slug counters (10 reports/hour).
 
-### 3.3 Integrations
+### 3.4 Integrations
 - OpenAI via official SDK from Convex functions (system prompt enforces 2 Qs, English-only, no emojis).
 - GitHub REST v3 for issue creation (Authorization: token `PAT`).
-- Resend for transactional emails; also delivers magic-link email from Better Auth `sendMagicLink` handler.
-- No-emoji sanitization is enforced on issue title and body before submission.
+- Resend for transactional emails including magic links.
+- Better Auth handles magic link and OAuth flows; Convex stores encrypted PATs keyed by Better Auth user.
 
 ## 4. Data Model (Convex)
 
 ```javascript
-users: {
-  auth_user_id: string,       // Better Auth userId
-  email: string,
-  name?: string,
-  image_url?: string,
-  provider: "email" | "google" | "github",
-  created_at: number,
-  updated_at?: number
-}
+// Better Auth tables (user/session/account/...) + custom application tables
+authTables: { /* imported from @convex-dev/better-auth */ }
 
 projects: {
-  user_id: Id<"users">,
+  user_id: Id<"user">,
   slug: string,              // 8-char random
   github_pat_encrypted: string,
   repo_owner: string,
@@ -95,7 +81,7 @@ projects: {
 }
 
 shareable_urls: {
-  user_id: Id<"users">,
+  user_id: Id<"user">,
   project_id: Id<"projects">,
   repo_full_name: string,
   slug: string,
@@ -119,7 +105,7 @@ reports: {
 }
 ```
 
-Better Auth manages its own session storage; Convex stores `sessions` table projected from Better Auth hooks for audit and revocation.
+Better Auth manages its session/account tables; `projects` and `shareable_urls` reference `user_id` for the authenticated maintainer.
 
 ### 4.3 Encrypted PAT Storage Flow
 ```mermaid
@@ -131,21 +117,19 @@ sequenceDiagram
     FE->>CF: submit PAT + repo + email
     Note over CF: AES-256 encrypt using ENCRYPTION_KEY (env)
     CF->>CF: encrypt PAT in memory
-    CF->>DB: store {encryptedPAT, repoOwner, repoName, maintainerEmail, slug}
+    CF->>DB: store {encryptedPAT, repoOwner, repoName, maintainerEmail, slug, user_id}
     CF-->>FE: return {slug, url}
 
     Note over CF,DB: Decrypt only when creating GitHub issue
 ```
-
-Decryption is symmetric; key never leaves Convex runtime.
 
 ## 5. Function Contracts (Convex)
 
 These are conceptual contracts invoked from the Next.js app via Convex functions (not public REST endpoints):
 
 ### auth.currentUser() → { userId, email, name }
-- Reads `users` table by Better Auth `auth_user_id`.
-- Creates user record on first login (idempotent upsert).
+- Reads Better Auth `user` table via `authComponent`.
+- Creates user record on first login (idempotent upsert handled by Better Auth).
 
 ### setup.createProject(pat, repo, email) → { slug, url }
 - Validates repo format and PAT scopes (`public_repo` for public repos)
@@ -167,17 +151,11 @@ These are conceptual contracts invoked from the Next.js app via Convex functions
 - Sends emails to maintainer and reporter via Resend
 - Prefills maintainer email from project record; reporter email remains user supplied.
 
-## 6. AI Conversation Logic
-Prompt template (system):
-```
-You are a bug triage assistant. Ask concise clarifying questions.
-Stop after two questions. Do not greet or thank. Language: English.
-```
-
-State is persisted in Convex on the `reports` document via fields `ai_q1`, `ai_a1`, `ai_q2`, `ai_a2` and `formatted_issue`.
-- `WAIT_DESC` → `Q1_SENT` → `A1_RECEIVED` → `Q2_SENT` → `A2_RECEIVED` → `READY`
-
-After `READY` the Convex function refuses further AI calls.
+## 6. Auth & Session Flow
+1. Maintainer hits `/setup`.
+2. Auth buttons trigger magic link or OAuth via Better Auth; upon return, the provider fills session data.
+3. `useAuthenticatedEmail` hook reads `authClient.session` to prefill email.
+4. Project creation uses authenticated user ID (`authComponent.getHeaders` implicitly when needed).
 
 ## 7. Rate Limiting & Abuse Protection
 - Server-side per-slug counter in Convex with a 1-hour fixed window (10 reports/hour).
@@ -195,6 +173,7 @@ All 5xx responses return `x-request-id` header for support.
 
 ## 9. Security Considerations
 - PAT encrypted with AES-256 using `ENCRYPTION_KEY` in Convex; key never leaves server runtime.
+- Better Auth session tokens validated server-side; `convex/http.ts` registers auth routes with CORS.
 - Least-privilege access within Convex; only necessary tables/functions available.
 - Apply secure headers via Next.js (HSTS, CSP as appropriate for Vercel hosting).
 - No client-side secrets; PAT never sent to the client.
