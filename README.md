@@ -25,6 +25,8 @@ OPENAI_API_KEY=
 RESEND_API_KEY=
 ENCRYPTION_KEY= # 32-byte hex for AES-256
 NEXT_PUBLIC_URL=https://koustos.dev
+# Optional if using Convex HTTP client via URL (server-side):
+# CONVEX_URL= https://<deployment>.convex.cloud
 ```
 
 You can copy `.env.example` to `.env` locally and fill in the values.
@@ -36,6 +38,22 @@ You can copy `.env.example` to `.env` locally and fill in the values.
 
 # Terminal B (Next.js)
 # npm run dev
+```
+
+### Convex environment (server runtime for functions)
+Set these in Convex so functions can run:
+```bash
+npx convex env set ENCRYPTION_KEY <64-hex>
+npx convex env set OPENAI_API_KEY <openai-key>
+npx convex env set RESEND_API_KEY <resend-key>
+npx convex env set NEXT_PUBLIC_URL https://koustos.dev
+```
+
+Generate a 32-byte hex key:
+```bash
+openssl rand -hex 32
+# or
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ### Notes
