@@ -29,6 +29,7 @@ export default function SetupPage() {
   const patModalInputRef = useRef<HTMLInputElement | null>(null);
   const [repos, setRepos] = useState<GithubRepoSummary[]>([]);
   const [repoSearch, setRepoSearch] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
     if (showPatModal) {
@@ -43,6 +44,24 @@ export default function SetupPage() {
     setResult(null);
     setRepos([]);
     setRepoSearch("");
+  }
+
+  function validateEmailFormat(value: string) {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return false;
+    }
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(trimmed);
+  }
+
+  function handleEmailChange(value: string) {
+    setEmail(value);
+    if (!value) {
+      setEmailError(null);
+      return;
+    }
+    setEmailError(validateEmailFormat(value) ? null : "Enter a valid email address like name@example.com.");
   }
 
   async function validatePat() {
@@ -101,6 +120,11 @@ export default function SetupPage() {
 
     if (!patValidated) {
       setError("Validate your GitHub token before generating a feedback URL.");
+      return;
+    }
+
+    if (!validateEmailFormat(email)) {
+      setEmailError("Enter a valid email address like name@example.com.");
       return;
     }
 
@@ -295,12 +319,19 @@ export default function SetupPage() {
             </label>
             <input
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
               type="email"
               className="w-full rounded border px-3 py-2"
               placeholder="dev@example.com"
+              aria-invalid={!!emailError}
+              aria-describedby={emailError ? "email-error" : undefined}
               required
             />
+            {emailError && (
+              <p id="email-error" className="mt-1 text-xs text-red-600">
+                {emailError}
+              </p>
+            )}
           </div>
           <button
             disabled={loading}
