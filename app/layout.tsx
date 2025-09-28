@@ -31,10 +31,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span aria-hidden="true" className="text-slate-500">
               •
             </span>
-            <span>Built by Spencer Francisco</span>
-            <span aria-hidden="true" className="text-slate-500">
-              •
-            </span>
             <span className="inline-flex items-center gap-1">
               <span>Built by</span>
               <a
