@@ -37,6 +37,9 @@ export default function SetupPage() {
       <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
         <div>
           <label className="block text-sm font-medium mb-1">GitHub Personal Access Token</label>
+          <p className="text-xs text-slate-500 mb-2">
+            Need one? Follow the <a className="text-blue-700 underline" href="https://github.com/settings/tokens/new" target="_blank" rel="noreferrer">GitHub guide</a> to create a PAT with public_repo access.
+          </p>
           <input value={pat} onChange={(e) => setPat(e.target.value)} type="password" className="w-full border rounded px-3 py-2" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required />
         </div>
         <div>
