@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import "./globals.css";
+import logoWhite from "@/assets/@logo_white.png";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
@@ -15,7 +17,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="border-b border-slate-300 bg-slate-900">
           <div className="mx-auto max-w-5xl px-4 py-3">
             <div className="flex items-center">
-              <img src="/assets/@logo_white.png" alt="Koustos" className="h-8 w-auto" />
+              <Image
+                src={logoWhite}
+                alt="Koustos"
+                width={230}
+                height={58}
+                className="h-[3.5rem] w-auto"
+                priority
+              />
             </div>
           </div>
         </header>

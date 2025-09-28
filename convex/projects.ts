@@ -15,11 +15,12 @@ export const getBySlug = query({
 
 export const createProject = mutation({
   args: {
+    userId: v.id("users"),
     pat: v.string(),
     repo: v.string(),
     email: v.string(),
   },
-  handler: async (ctx, { pat, repo, email }) => {
+  handler: async (ctx, { userId, pat, repo, email }) => {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       throw new Error("Invalid email");
     }
@@ -37,15 +38,25 @@ export const createProject = mutation({
     }
 
     const slug = generateSlug();
-    const encryptedPat = encryptString(pat);
+    const encryptedPat = await encryptString(pat);
     const now = Date.now();
 
     const projectId = await ctx.db.insert("projects", {
+      user_id: userId,
       slug,
       github_pat_encrypted: encryptedPat,
       repo_owner: owner,
       repo_name: name,
       maintainer_email: email,
+      created_at: now,
+    });
+
+    await ctx.db.insert("shareable_urls", {
+      user_id: userId,
+      project_id: projectId,
+      repo_full_name: `${owner}/${name}`,
+      slug,
+      maintainer_email_snapshot: email,
       created_at: now,
     });
 

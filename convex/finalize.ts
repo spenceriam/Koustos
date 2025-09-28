@@ -15,7 +15,7 @@ export const submit = action({
     const project = await ctx.db.get(report.project_id);
     if (!project) throw new Error("Project not found");
 
-    const pat = decryptString(project.github_pat_encrypted);
+    const pat = await decryptString(project.github_pat_encrypted);
 
     // Title heuristic: first line up to 80 chars
     const bodyRaw = (editMarkdown && editMarkdown.trim()) || report.formatted_issue || "";

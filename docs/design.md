@@ -12,24 +12,30 @@ graph TD
     end
     subgraph Vercel
         B[Vercel Edge/SSR]
+        D[Better Auth Client SDK]
     end
     subgraph Convex
-        C[Convex Functions<br/>setup / report / ai / finalize]
-        G[(Convex Database:<br/>Projects, Reports)]
-        H[(Secrets/Env: ENCRYPTION_KEY)]
+        C[Convex Functions<br/>setup / report / ai / finalize / auth]
+        G[(Convex Database:<br/>Users, Projects, ShareableUrls, Reports, Sessions)]
+        H[(Secrets/Env: ENCRYPTION_KEY, BETTER_AUTH_SECRET)]
     end
     subgraph External
         J[GitHub REST v3]
         K[OpenAI API]
         L[Resend API]
+        M[Better Auth Core]
+        N[OAuth Providers<br/>Google · GitHub]
     end
 
     A <--> B
-    B <--> C
+    B <--> D
+    D <--> M
+    M <--> C
     C --> K
     C --> J
     C --> L
     C --> G
+    M --> N
     G -.-> H
 ```
 
@@ -41,9 +47,17 @@ graph TD
 - Styling: TailwindCSS, no emoji font.
 - Accessibility: WCAG 2.1 AA.
 - Shared components: `ReportForm`, `IssuePreview`, `CopyUrl`, Toast provider for UI states.
+- Better Auth client SDK hydrates user session; wraps App Router layouts with `AuthProvider`.
+- Auth UI provides email entry form (magic link), Google OAuth button, GitHub OAuth button.
+- Setup wizard pre-fills maintainer email from authenticated profile but allows edits before submission.
 
-### 3.2 Convex Functions
-- `setup.createProject(pat, repo, email)` → validate PAT via GitHub API, encrypt PAT, store project, return slug/url.
+### 3.2 Auth & Convex Functions
+- `auth.currentUser()` → fetch Better Auth user by `authUserId` stored in Convex `users` table.
+- `auth.ensureSession(ctx)` helper ensures every mutation/query is scoped to the authenticated user (`ctx.auth.userId`).
+- `auth.issueMagicLink(email)` delegates to Better Auth `signIn.magicLink` and triggers Resend email inside Better Auth hook.
+
+### 3.3 Core Convex Functions
+- `setup.createProject(pat, repo, email)` → validate PAT via GitHub API, encrypt PAT, store project under `user_id`, return slug/url.
 - `report.start(slug, name, email, description)` → create report, enforce rate limit, return first AI question.
 - `ai.respond(reportId, answer)` → drive conversation; stop after 2 follow-ups.
 - `finalize.submit(reportId, edits?)` → decrypt PAT, create GitHub issue, send emails via Resend.
@@ -53,18 +67,39 @@ Rate limit enforced in Convex using per-slug counters (10 reports/hour).
 ### 3.3 Integrations
 - OpenAI via official SDK from Convex functions (system prompt enforces 2 Qs, English-only, no emojis).
 - GitHub REST v3 for issue creation (Authorization: token `PAT`).
-- Resend for transactional emails.
+- Resend for transactional emails; also delivers magic-link email from Better Auth `sendMagicLink` handler.
 - No-emoji sanitization is enforced on issue title and body before submission.
 
 ## 4. Data Model (Convex)
 
 ```javascript
+users: {
+  auth_user_id: string,       // Better Auth userId
+  email: string,
+  name?: string,
+  image_url?: string,
+  provider: "email" | "google" | "github",
+  created_at: number,
+  updated_at?: number
+}
+
 projects: {
+  user_id: Id<"users">,
   slug: string,              // 8-char random
   github_pat_encrypted: string,
   repo_owner: string,
   repo_name: string,
   maintainer_email: string,
+  created_at: number,
+  updated_at?: number
+}
+
+shareable_urls: {
+  user_id: Id<"users">,
+  project_id: Id<"projects">,
+  repo_full_name: string,
+  slug: string,
+  maintainer_email_snapshot: string,
   created_at: number
 }
 
@@ -83,6 +118,8 @@ reports: {
   updated_at?: number
 }
 ```
+
+Better Auth manages its own session storage; Convex stores `sessions` table projected from Better Auth hooks for audit and revocation.
 
 ### 4.3 Encrypted PAT Storage Flow
 ```mermaid
@@ -106,10 +143,15 @@ Decryption is symmetric; key never leaves Convex runtime.
 
 These are conceptual contracts invoked from the Next.js app via Convex functions (not public REST endpoints):
 
+### auth.currentUser() → { userId, email, name }
+- Reads `users` table by Better Auth `auth_user_id`.
+- Creates user record on first login (idempotent upsert).
+
 ### setup.createProject(pat, repo, email) → { slug, url }
 - Validates repo format and PAT scopes (`public_repo` for public repos)
 - Encrypts PAT with AES-256 using `ENCRYPTION_KEY`
-- Stores project and returns shareable URL `https://koustos.dev/f/{slug}`
+- Stores project keyed by `user_id` and returns shareable URL `https://koustos.dev/f/{slug}`
+- Updates/creates `shareable_urls` row for user + repo combination.
 
 ### report.start(slug, name, email, description) → { reportId, ai_q1 }
 - Validates inputs and email format
@@ -123,6 +165,7 @@ These are conceptual contracts invoked from the Next.js app via Convex functions
 ### finalize.submit(reportId, edits?) → { issueUrl }
 - Decrypts PAT, creates GitHub issue, stores issue number
 - Sends emails to maintainer and reporter via Resend
+- Prefills maintainer email from project record; reporter email remains user supplied.
 
 ## 6. AI Conversation Logic
 Prompt template (system):
