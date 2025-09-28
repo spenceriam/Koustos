@@ -31,12 +31,20 @@ export default function SetupPage() {
   const [repos, setRepos] = useState<GithubRepoSummary[]>([]);
   const [repoSearch, setRepoSearch] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (showPatModal) {
       patModalInputRef.current?.focus();
     }
   }, [showPatModal]);
+
+  useEffect(() => {
+    if (showSummary) {
+      confirmButtonRef.current?.focus();
+    }
+  }, [showSummary]);
 
   function handlePatChange(value: string) {
     setPat(value);
@@ -46,6 +54,7 @@ export default function SetupPage() {
     setRepos([]);
     setRepoSearch("");
     setPatVisible(false);
+    setShowSummary(false);
   }
 
   function validateEmailFormat(value: string) {
@@ -78,6 +87,7 @@ export default function SetupPage() {
     setRepos([]);
     setRepoSearch("");
     setPatVisible(false);
+    setShowSummary(false);
 
     try {
       const response = await fetch("/api/github/repos", {
@@ -132,6 +142,11 @@ export default function SetupPage() {
       return;
     }
 
+    setShowSummary(true);
+  }
+
+  async function confirmSubmit() {
+    setShowSummary(false);
     setLoading(true);
     setError(null);
     setResult(null);
@@ -395,6 +410,61 @@ export default function SetupPage() {
           </div>
         )}
       </div>
+
+      {showSummary && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div
+            className="w-full max-w-md rounded bg-white p-6 shadow"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="summary-title"
+          >
+            <h2 className="text-lg font-semibold" id="summary-title">
+              Confirm project details
+            </h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Double-check these values before creating your feedback URL.
+            </p>
+            <dl className="mt-4 space-y-3 text-sm">
+              <div>
+                <dt className="font-medium text-slate-600">Repository</dt>
+                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 font-mono text-xs text-slate-700">
+                  {repo || "Not selected"}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-slate-600">Maintainer email</dt>
+                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 text-slate-700">
+                  {email}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-slate-600">Token status</dt>
+                <dd className="mt-1 rounded border bg-slate-50 px-3 py-2 text-slate-700">
+                  {patValidated ? `Validated (${repoCount ?? 0} repos accessible)` : "Not validated"}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                className="rounded border px-3 py-2 text-sm"
+                onClick={() => setShowSummary(false)}
+              >
+                Cancel
+              </button>
+              <button
+                ref={confirmButtonRef}
+                type="button"
+                className="rounded bg-[var(--fg)] px-3 py-2 text-sm font-medium text-white"
+                onClick={confirmSubmit}
+              >
+                Confirm and create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
