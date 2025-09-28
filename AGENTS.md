@@ -123,6 +123,7 @@ git commit -m "[koustos] <short action>"
 5. Enforce the “two follow-up questions then stop” AI flow server-side.
 6. Apply the no-emoji rule across UI, AI outputs, emails, and commit messages.
 7. Setup page now requires PAT validation before submission, offers a searchable repo picker (hides archived repos), validates maintainer email format, supports press-and-hold PAT reveal, and presents a confirmation summary modal prior to submitting.
+8. Header uses the `@logo_white.png` asset and footer must include Lion Mystic copyright link, author credit with X contact icon, and mission statement separated by bullet glyphs.
 
 ## Example Snippets
 OpenAI completion (keep concise prompt, token limits):

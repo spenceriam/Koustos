@@ -35,14 +35,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span aria-hidden="true" className="text-slate-500">
               •
             </span>
-            <a
-              href="https://x.com/spencer_i_am"
-              className="underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Contact
-            </a>
+            <span className="inline-flex items-center gap-1">
+              <a
+                href="https://x.com/spencer_i_am"
+                className="underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Spencer Francisco
+              </a>
+              <svg
+                aria-hidden="true"
+                className="h-3 w-3 fill-current text-slate-300"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3.5 3h5.6l5.2 6.9L20 3h1.5l-6.3 8.5L22.5 21H17l-5.6-7.5L6 21H4.5l6.4-8.7L3.5 3Z" />
+              </svg>
+            </span>
             <span aria-hidden="true" className="text-slate-500">
               •
             </span>
