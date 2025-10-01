@@ -18,7 +18,6 @@ export default function HomePage() {
               <Link href="/setup" className="rounded bg-[var(--fg)] px-4 py-2 font-medium text-white">
                 Get your feedback URL
               </Link>
-              <a href="#how" className="rounded border px-4 py-2 text-sm">How it works</a>
             </div>
           </div>
           <div className="hidden md:block">
