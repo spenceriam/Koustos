@@ -103,11 +103,12 @@ export default function SetupPage() {
     setShowSummary(false);
 
     try {
-      const response = await fetch("/api/github/repos", {
+      const opts: RequestInit = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pat }),
-      });
+      };
+      const response = await fetch("/api/github/repos", opts);
 
       if (response.status === 401) {
         setModalMessage(
@@ -165,11 +166,12 @@ export default function SetupPage() {
     setPatVisible(false);
 
     try {
-      const res = await fetch("/api/setup", {
+      const opts: RequestInit = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pat, repo }),
-      });
+      };
+      const res = await fetch("/api/setup", opts);
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as { url: string };
       setResult(json.url);
