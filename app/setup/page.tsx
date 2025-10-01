@@ -37,17 +37,35 @@ export default function SetupPage() {
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
   async function postJson(url: string, payload: unknown) {
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    const req = new Request(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
-    });
-    // Debugging aid
-    // eslint-disable-next-line no-console
-    console.debug("POST", url);
-    return await fetch(req);
+    try {
+      return await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      } as RequestInit);
+    } catch (err: any) {
+      const msg = String(err?.message || "");
+      if (/not a valid HTTP method/i.test(msg) || /Failed to execute 'fetch'/i.test(msg)) {
+        // Fallback to XHR in case of weird fetch/method polyfill issues
+        return await new Promise<Response>((resolve, reject) => {
+          try {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = () => {
+              const text = xhr.responseText || "";
+              const status = xhr.status || 0;
+              resolve(new Response(text, { status }));
+            };
+            xhr.onerror = () => reject(new TypeError("Network request failed"));
+            xhr.send(JSON.stringify(payload));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+      throw err;
+    }
   }
 
   useEffect(() => {

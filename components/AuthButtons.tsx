@@ -8,20 +8,7 @@ export function AuthButtons() {
   const [showSignup, setShowSignup] = useState<boolean>(false);
   const [lastEmail, setLastEmail] = useState<string>("");
 
-  async function signIn(provider: "google" | "github") {
-    setError("");
-    try {
-      await authClient.signIn.social({ provider });
-    } catch (err: any) {
-      const msg = String(err?.message || "");
-      if (/not\s*found|no\s*user|does\s*not\s*exist/i.test(msg)) {
-        setError("Account not found. Please create an account below.");
-        setShowSignup(true);
-      } else {
-        setError("Google sign in failed. Try again or create an account.");
-      }
-    }
-  }
+  // OAuth removed per request; password auth only
 
   async function passwordSignIn(formData: FormData) {
     setError("");
@@ -63,23 +50,7 @@ export function AuthButtons() {
 
   return (
     <div className="space-y-3">
-      {/* Google first */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="flex-1 rounded border px-3 py-2 text-sm"
-          onClick={() => signIn("google")}
-        >
-          Continue with Google
-        </button>
-      </div>
-
-      {/* OR divider */}
-      <div className="my-1 flex items-center gap-3">
-        <div className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs text-slate-500">OR</span>
-        <div className="h-px flex-1 bg-slate-200" />
-      </div>
+      {/* Email/password */}
 
       {/* Email/password sign-in */}
       <form action={passwordSignIn} className="flex flex-col gap-2">

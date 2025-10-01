@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth";
-import { password } from "better-auth/plugins";
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { components } from "./betterAuthComponent/_generated/api";
@@ -8,8 +7,6 @@ import { v } from "convex/values";
 // Magic link disabled in MVP
 
 const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 // GitHub OAuth disabled in MVP
 
 // In dev, allow running without Google OAuth by omitting the provider
@@ -45,20 +42,8 @@ export const createAuth = (ctx: GenericCtx<typeof components.betterAuth>) => {
     logger: { disabled: true },
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
-    password: password({
-      requireEmailVerification: false,
-      minPasswordLength: 8,
-    }),
-    socialProviders:
-      googleClientId && googleClientSecret
-        ? {
-            google: {
-              clientId: googleClientId,
-              clientSecret: googleClientSecret,
-              scope: ["email", "profile"],
-            },
-          }
-        : {},
+    // Password auth handled via Better Auth defaults; no magic link, no social
+    socialProviders: {},
     plugins: [crossDomain({ siteUrl }), convex()],
   });
 };
