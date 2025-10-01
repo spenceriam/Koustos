@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#f7f5f2]">
+      <body className="min-h-screen bg-[#f7f5f2] flex flex-col">
         <AuthProvider>
           <ToastProvider>
             <header className="border-b border-slate-300 bg-slate-900">
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
             </header>
-            <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
+            <main className="mx-auto max-w-5xl px-4 py-6 flex-1">{children}</main>
             <footer className="mt-auto border-t border-slate-300 bg-slate-900">
               <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2 px-4 py-4 text-center text-slate-300 text-xs">
                 <span>

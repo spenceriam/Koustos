@@ -36,6 +36,21 @@ export default function SetupPage() {
   const [showSummary, setShowSummary] = useState(false);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
+  async function postJson(url: string, payload: unknown) {
+    const opts: RequestInit = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    };
+    if (typeof (opts as any).method !== "string") {
+      (opts as any).method = "POST";
+    }
+    // Debugging aid
+    // eslint-disable-next-line no-console
+    console.debug("POST", url, opts);
+    return await window.fetch(url, opts);
+  }
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -108,7 +123,7 @@ export default function SetupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pat }),
       };
-      const response = await fetch("/api/github/repos", opts);
+      const response = await postJson("/api/github/repos", { pat });
 
       if (response.status === 401) {
         setModalMessage(
@@ -151,9 +166,8 @@ export default function SetupPage() {
       return;
     }
 
-    // email no longer required
-
-    setShowSummary(true);
+    // Directly submit without summary modal
+    await confirmSubmit();
   }
 
   async function confirmSubmit() {
@@ -171,7 +185,7 @@ export default function SetupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pat, repo }),
       };
-      const res = await fetch("/api/setup", opts);
+      const res = await postJson("/api/setup", { pat, repo });
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as { url: string };
       setResult(json.url);
