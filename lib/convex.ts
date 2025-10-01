@@ -16,7 +16,6 @@ function getClient(): ConvexHttpClient {
 export async function convexCreateProject(args: {
   pat: string;
   repo: string;
-  email: string;
 }): Promise<{ slug: string; url: string }> {
   const client = getClient();
   const res = (await client.mutation("projects:createProject", args)) as {
@@ -29,7 +28,6 @@ export async function convexCreateProject(args: {
 export async function convexReportStart(args: {
   slug: string;
   name: string;
-  email: string;
   description: string;
 }): Promise<{ reportId: string; ai_q1: string }> {
   const client = getClient();

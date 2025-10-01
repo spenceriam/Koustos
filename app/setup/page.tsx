@@ -18,7 +18,6 @@ interface GithubReposResponse {
 export default function SetupPage() {
   const [pat, setPat] = useState("");
   const [repo, setRepo] = useState("");
-  const [email, setEmail] = useState("");
   const authenticatedEmail = useAuthenticatedEmail();
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -38,7 +37,7 @@ export default function SetupPage() {
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    setEmail(authenticatedEmail || "");
+    /* email removed from setup requirements */
   }, [authenticatedEmail]);
 
   useEffect(() => {
@@ -65,22 +64,10 @@ export default function SetupPage() {
   }
 
   function validateEmailFormat(value: string) {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return false;
-    }
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(trimmed);
+    return true;
   }
 
-  function handleEmailChange(value: string) {
-    setEmail(value);
-    if (!value) {
-      setEmailError(null);
-      return;
-    }
-    setEmailError(validateEmailFormat(value) ? null : "Enter a valid email address like name@example.com.");
-  }
+  function handleEmailChange(value: string) {}
 
   async function validatePat() {
     if (!pat.trim()) {
@@ -144,10 +131,7 @@ export default function SetupPage() {
       return;
     }
 
-    if (!validateEmailFormat(email)) {
-      setEmailError("Enter a valid email address like name@example.com.");
-      return;
-    }
+    // email no longer required
 
     setShowSummary(true);
   }
@@ -165,7 +149,7 @@ export default function SetupPage() {
       const res = await fetch("/api/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pat, repo, email }),
+        body: JSON.stringify({ pat, repo }),
       });
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as { url: string };
@@ -250,7 +234,7 @@ export default function SetupPage() {
         <div className="mb-6 rounded border bg-white p-4">
           <h2 className="text-sm font-semibold">Maintainer sign-in</h2>
           <p className="mt-1 text-xs text-slate-600">
-            Use a magic link or social sign-in to prefill your maintainer email and access repositories.
+            Sign in to access your repositories. Email is not required for URL generation.
           </p>
           <div className="mt-3">
             <AuthButtons />
@@ -382,26 +366,7 @@ export default function SetupPage() {
               </div>
             )}
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Your Email (for notifications)
-            </label>
-            <input
-              value={email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              type="email"
-              className="w-full rounded border px-3 py-2"
-              placeholder="dev@example.com"
-              aria-invalid={!!emailError}
-              aria-describedby={emailError ? "email-error" : undefined}
-              required
-            />
-            {emailError && (
-              <p id="email-error" className="mt-1 text-xs text-red-600">
-                {emailError}
-              </p>
-            )}
-          </div>
+          {/* Email input removed from setup flow */}
           <button
             disabled={loading}
             className="w-full rounded bg-[var(--fg)] py-2 text-white"

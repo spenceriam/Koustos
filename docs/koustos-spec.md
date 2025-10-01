@@ -6,7 +6,7 @@ Build a nano-SaaS that lets non-GitHub users report bugs via unique URLs. Develo
 - Developer gets unique URL (koustos.dev/f/abc123) tied to their GitHub repo
 - Anyone reports bugs without GitHub account
 - AI formats messy reports into proper GitHub issues
-- Email notifications via Resend
+- Email notifications: removed in MVP (no emails sent)
 
 ## Tech Stack
 - Next.js 14 + Tailwind CSS
@@ -14,7 +14,7 @@ Build a nano-SaaS that lets non-GitHub users report bugs via unique URLs. Develo
 - Convex (database + encrypted PAT storage)
 - OpenAI GPT-4o-mini (cheapest model at $0.15/1M tokens)
 - GitHub REST API
-- Resend (email notifications)
+- No email provider in MVP
 
 ## Database Schema (Convex)
 ```javascript
@@ -23,14 +23,14 @@ projects: {
   github_pat_encrypted: string,
   repo_owner: string,
   repo_name: string,
-  maintainer_email: string,
+  maintainer_email: string, // removed in MVP (make optional / ignore)
   created_at: number
 }
 
 reports: {
   project_id: Id<"projects">,
   reporter_name: string,
-  reporter_email: string,
+  reporter_email: string, // removed in MVP (make optional / ignore)
   raw_input: string,
   formatted_issue: string,
   github_issue_number: number,
@@ -66,7 +66,7 @@ await ctx.db.insert("projects", { slug, github_pat_encrypted: encrypted, ... });
 
 ## Page 2: Bug Report (/f/[slug])
 Clean form with conversational UI:
-1. Name + Email inputs
+1. Name input
 2. Text area: "Describe the bug"
 3. AI chat appears below after first submit
 
@@ -137,40 +137,8 @@ const response = await fetch(
 );
 ```
 
-## Email Notifications (Resend)
-Two emails only (NO EMOJIS):
-
-1. **To Developer** (immediate):
-```javascript
-await resend.emails.send({
-  from: 'bugs@koustos.dev',
-  to: maintainer_email,
-  subject: `New bug report: ${issueTitle}`, // No emoji
-  html: `
-    <h2>New Issue Created</h2>
-    <p><strong>Reporter:</strong> ${reporterName}</p>
-    <p><strong>Preview:</strong> ${preview}...</p>
-    <p><strong>Resolution Criteria:</strong> ${resolutionCriteria}</p>
-    <a href="${githubUrl}">View Issue #${number} on GitHub</a>
-  `
-});
-```
-
-2. **To Reporter** (confirmation):
-```javascript
-await resend.emails.send({
-  from: 'bugs@koustos.dev',
-  to: reporter_email,
-  subject: 'Bug report submitted successfully', // No emoji
-  html: `
-    <h2>Thank You</h2>
-    <p>Your bug report has been submitted to the development team.</p>
-    <p><strong>What you reported will be resolved when:</strong></p>
-    <p>${resolutionCriteria}</p>
-    <a href="${githubUrl}">Track Progress on GitHub</a>
-  `
-});
-```
+## Email Notifications
+Out of scope in MVP.
 
 ## UI Requirements
 - Mobile-first responsive
@@ -228,7 +196,7 @@ await resend.emails.send({
 ```
 CONVEX_DEPLOYMENT=
 OPENAI_API_KEY=
-RESEND_API_KEY=
+# RESEND_API_KEY removed in MVP
 ENCRYPTION_KEY= # 32-byte hex key
 NEXT_PUBLIC_URL=https://koustos.dev
 ```
@@ -236,10 +204,10 @@ NEXT_PUBLIC_URL=https://koustos.dev
 ## Quick Start Commands
 ```bash
 npm create convex@latest koustos
-npm install openai resend
+npm install openai
 npm install @types/node --save-dev
 npx convex env set OPENAI_API_KEY <key>
-npx convex env set RESEND_API_KEY <key>
+# no email env required
 npx convex env set ENCRYPTION_KEY <generate-32-byte-hex>
 npm run dev
 ```

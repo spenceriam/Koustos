@@ -28,7 +28,8 @@ graph TD
     B <--> C
     C --> K
     C --> J
-    C --> L
+    %% Email removed in MVP
+    %% C --> L
     C --> G
     G -.-> H
 ```
@@ -42,7 +43,7 @@ graph TD
 - Accessibility: WCAG 2.1 AA.
 - Shared components: `ReportForm`, `IssuePreview`, `CopyUrl`, Toast provider for UI states.
 - Better Auth client SDK hydrates session context via `AuthProvider`.
-- Setup wizard pre-fills maintainer email from authenticated user profile, allowing edits before submission.
+- Setup wizard focuses on PAT + repo; email not collected in MVP.
 
 ### 3.2 Auth & Convex Functions
 - `authComponent` (Better Auth) exposes session-aware helpers and database adapters.
@@ -50,17 +51,17 @@ graph TD
 - `authComponent.registerRoutes` mounts HTTP handlers in `convex/http.ts` with CORS enabled.
 
 ### 3.3 Core Convex Functions
-- `setup.createProject(pat, repo, email)` → validate PAT via GitHub API, encrypt PAT, store project under `user_id`, return slug/url.
-- `report.start(slug, name, email, description)` → create report, enforce rate limit, return first AI question.
+- `setup.createProject(pat, repo)` → validate PAT via GitHub API, encrypt PAT, store project under `user_id`, return slug/url.
+- `report.start(slug, name, description)` → create report, enforce rate limit, return first AI question.
 - `ai.respond(reportId, answer)` → drive conversation; stop after 2 follow-ups.
-- `finalize.submit(reportId, edits?)` → decrypt PAT, create GitHub issue, send emails via Resend.
+- `finalize.submit(reportId, edits?)` → decrypt PAT, create GitHub issue. (Emails removed in MVP)
 
 Rate limit enforced in Convex using per-slug counters (10 reports/hour).
 
 ### 3.4 Integrations
 - OpenAI via official SDK from Convex functions (system prompt enforces 2 Qs, English-only, no emojis).
 - GitHub REST v3 for issue creation (Authorization: token `PAT`).
-- Resend for transactional emails including magic links.
+- Email sending removed in MVP; magic links disabled.
 - Better Auth handles magic link and OAuth flows; Convex stores encrypted PATs keyed by Better Auth user.
 
 ## 4. Data Model (Convex)
@@ -75,7 +76,7 @@ projects: {
   github_pat_encrypted: string,
   repo_owner: string,
   repo_name: string,
-  maintainer_email: string,
+  maintainer_email?: string,
   created_at: number,
   updated_at?: number
 }
@@ -85,14 +86,14 @@ shareable_urls: {
   project_id: Id<"projects">,
   repo_full_name: string,
   slug: string,
-  maintainer_email_snapshot: string,
+  maintainer_email_snapshot?: string,
   created_at: number
 }
 
 reports: {
   project_id: Id<"projects">,
   reporter_name: string,
-  reporter_email: string,
+  reporter_email?: string,
   raw_input: string,
   ai_q1?: string,
   ai_a1?: string,
@@ -114,10 +115,10 @@ sequenceDiagram
     participant CF as Convex Function
     participant DB as Convex Database
 
-    FE->>CF: submit PAT + repo + email
+    FE->>CF: submit PAT + repo
     Note over CF: AES-256 encrypt using ENCRYPTION_KEY (env)
     CF->>CF: encrypt PAT in memory
-    CF->>DB: store {encryptedPAT, repoOwner, repoName, maintainerEmail, slug, user_id}
+    CF->>DB: store {encryptedPAT, repoOwner, repoName, slug, user_id}
     CF-->>FE: return {slug, url}
 
     Note over CF,DB: Decrypt only when creating GitHub issue
@@ -131,14 +132,14 @@ These are conceptual contracts invoked from the Next.js app via Convex functions
 - Reads Better Auth `user` table via `authComponent`.
 - Creates user record on first login (idempotent upsert handled by Better Auth).
 
-### setup.createProject(pat, repo, email) → { slug, url }
+### setup.createProject(pat, repo) → { slug, url }
 - Validates repo format and PAT scopes (`public_repo` for public repos)
 - Encrypts PAT with AES-256 using `ENCRYPTION_KEY`
 - Stores project keyed by `user_id` and returns shareable URL `https://koustos.dev/f/{slug}`
 - Updates/creates `shareable_urls` row for user + repo combination.
 
-### report.start(slug, name, email, description) → { reportId, ai_q1 }
-- Validates inputs and email format
+### report.start(slug, name, description) → { reportId, ai_q1 }
+- Validates inputs
 - Enforces rate limit (10/hour per slug)
 - Creates initial report and returns first AI prompt
 
@@ -148,8 +149,7 @@ These are conceptual contracts invoked from the Next.js app via Convex functions
 
 ### finalize.submit(reportId, edits?) → { issueUrl }
 - Decrypts PAT, creates GitHub issue, stores issue number
-- Sends emails to maintainer and reporter via Resend
-- Prefills maintainer email from project record; reporter email remains user supplied.
+- Email notifications removed in MVP
 
 ## 6. Auth & Session Flow
 1. Maintainer hits `/setup`.
@@ -183,7 +183,7 @@ Per AGENTS.md, testing is deferred until explicitly requested.
 
 When requested:
 - Unit: Jest for Convex functions (encryption round-trip, token caps, markdown rendering)
-- Integration: Mock GitHub/OpenAI/Resend HTTP calls
+- Integration: Mock GitHub/OpenAI HTTP calls (no email)
 - E2E: Cypress for setup ≤30 s, report flow ≤2 min, rate-limit block on 11th
 No CI setup in MVP unless explicitly requested.
 

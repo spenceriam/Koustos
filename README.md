@@ -1,6 +1,6 @@
 # Koustos
 
-Turn shareable links into structured GitHub issues without requiring reporters to have GitHub accounts. Built with Next.js (Vercel), Convex, OpenAI, and Resend.
+Turn shareable links into structured GitHub issues without requiring reporters to have GitHub accounts. Built with Next.js (Vercel), Convex, and OpenAI. Email is out of scope in MVP.
 
 ![Screenshot placeholder](./assets/@logo_white.png)
 
@@ -22,7 +22,7 @@ Create environment variables in Vercel/Convex (or a local `.env` for development
 ```bash
 CONVEX_DEPLOYMENT=
 OPENAI_API_KEY=
-RESEND_API_KEY=
+# RESEND_API_KEY not required in MVP
 ENCRYPTION_KEY= # 32-byte hex for AES-256
 NEXT_PUBLIC_URL=https://koustos.dev
 # Optional if using Convex HTTP client via URL (server-side):
@@ -45,7 +45,7 @@ Set these in Convex so functions can run:
 ```bash
 npx convex env set ENCRYPTION_KEY <64-hex>
 npx convex env set OPENAI_API_KEY <openai-key>
-npx convex env set RESEND_API_KEY <resend-key>
+# no email env required
 npx convex env set NEXT_PUBLIC_URL https://koustos.dev
 ```
 
@@ -75,7 +75,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - Database: Convex (encrypted PAT at rest)
 - Hosting: Vercel (Next.js 14)
 - AI: OpenAI via official SDK
-- Email: Resend
+- Email: not implemented in MVP
 - GitHub: REST API v3
 
 ## Notes

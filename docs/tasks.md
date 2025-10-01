@@ -21,9 +21,8 @@ This replaces prior Cloudflare/AWS items. Scope is aligned to AGENTS.md: Next.js
 - [x] Mutation: `ai.respond` (two follow-up questions, generate formatted markdown)
 - [x] Page `/f/[slug]` with chat UI, preview, edit mode
 
-## 4. Finalization & Notifications
+## 4. Finalization
 - [x] Mutation: `finalize.submit` (decrypt PAT, create GitHub issue)
-- [x] Email notifications via Resend (maintainer + reporter)
 
 ## 5. Guardrails & UX
 - [x] No-emoji sanitization for issue title/body

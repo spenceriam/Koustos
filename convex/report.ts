@@ -17,10 +17,9 @@ export const start = mutation({
   args: {
     slug: v.string(),
     name: v.string(),
-    email: v.string(),
     description: v.string(),
   },
-  handler: async (ctx, { slug, name, email, description }) => {
+  handler: async (ctx, { slug, name, description }) => {
     const project = await ctx.db
       .query("projects")
       .withIndex("by_slug", (q) => q.eq("slug", slug))
@@ -28,18 +27,14 @@ export const start = mutation({
     if (!project) throw new Error("Project not found");
 
     await ensureRateLimit(ctx, project._id);
-
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Invalid email");
     if (!description.trim()) throw new Error("Description required");
     const safeDesc = clampLength(description, 2000);
     const safeName = clampLength(name, 120);
-    const safeEmail = clampLength(email, 120);
 
     const now = Date.now();
     const reportId = await ctx.db.insert("reports", {
       project_id: project._id,
       reporter_name: safeName,
-      reporter_email: safeEmail,
       raw_input: safeDesc,
       created_at: now,
     });

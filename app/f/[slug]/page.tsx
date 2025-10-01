@@ -4,7 +4,6 @@ import { useState } from "react";
 export default function ReportPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [desc, setDesc] = useState("");
   const [q, setQ] = useState<string | null>(null);
   const [a1, setA1] = useState("");
@@ -23,7 +22,7 @@ export default function ReportPage({ params }: { params: { slug: string } }) {
       const res = await fetch("/api/report/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, name, email, description: desc }),
+        body: JSON.stringify({ slug, name, description: desc }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed");
@@ -105,9 +104,8 @@ export default function ReportPage({ params }: { params: { slug: string } }) {
     <div className="grid md:grid-cols-2 gap-6">
       <div className="border rounded p-4">
         <h2 className="font-semibold mb-2">Report a Bug</h2>
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-1 gap-3 mb-3">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" className="border rounded px-3 py-2" />
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your Email" className="border rounded px-3 py-2" />
         </div>
         <textarea value={desc} onChange={(e) => setDesc(e.target.value)} className="w-full border rounded px-3 py-2 min-h-[120px]" placeholder="Describe the bug" />
         <div className="mt-3">

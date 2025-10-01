@@ -13,7 +13,7 @@ Koustos lets non-GitHub users submit structured bug reports via a shareable URL.
 - Database: Convex (stores `projects` and `reports`; encrypted PAT at rest)
 - Hosting: Vercel (Next.js 14)
 - AI: OpenAI via official SDK; user-provided `OPENAI_API_KEY`
-- Notifications: Resend (transactional email)
+- Notifications: Email removed for MVP scale-back
 - GitHub Integration: REST API v3 for issue creation
 - Rate limiting: 10 reports/hour per project (server-side in Convex)
 - Absolute rule: NO EMOJIS anywhere (UI, emails, issue title/body, commits)
@@ -38,7 +38,7 @@ Define these in Vercel and Convex. Never commit secrets. Local `.env.local` must
 ```bash
 CONVEX_DEPLOYMENT=
 OPENAI_API_KEY=
-RESEND_API_KEY=
+# RESEND_API_KEY removed; no emails in MVP
 ENCRYPTION_KEY= # 32-byte hex key for AES-256
 NEXT_PUBLIC_URL=https://koustos.dev
 ```
@@ -67,10 +67,10 @@ Quick-start (from docs/spec; use when bootstrapping code):
 
 ```bash
 npm create convex@latest koustos
-npm install openai resend
+npm install openai
 npm install @types/node --save-dev
 npx convex env set OPENAI_API_KEY <key>
-npx convex env set RESEND_API_KEY <key>
+# no RESEND key required
 npx convex env set ENCRYPTION_KEY <generate-32-byte-hex>
 npm run dev
 ```
@@ -89,19 +89,19 @@ npm run dev
 - PAT never leaves server runtime; encrypted with AES-256 inside Convex functions
 - Do not log secrets or raw PATs; scrub sensitive values in logs
 - Rate limit strictly in Convex: max 10 reports per hour per project slug
-- Validate all external API responses (GitHub, OpenAI, Resend)
+- Validate all external API responses (GitHub, OpenAI)
 - Restrict PII to what’s necessary (reporter name, email)
 
 ## Tools & Integrations
 - OpenAI SDK: model `gpt-5-nano-2025-08-07` preferred for cost; keep tokens low
 - GitHub REST v3: `POST /repos/{owner}/{repo}/issues` for issue creation
-- Resend: two emails (maintainer, reporter); professional tone, no emojis
+- Email notifications are out of scope in MVP
 - Convex: schema for `projects` and `reports`; server-side encryption/decryption
 
 ## Product Guardrails (from requirements)
 - Setup ≤ 30 s to generate `koustos.dev/f/{slug}`
 - End-to-end report → issue ≤ 2 min
-- Cost target per report ≤ $0.001 (OpenAI+Resend typical inputs)
+- Cost target per report ≤ $0.001 (OpenAI typical inputs)
 - Public GitHub repos; English-only; no dashboard in MVP
 
 ## Development Lifecycle Rules
@@ -126,7 +126,7 @@ git commit -m "[koustos] <short action>"
 4. When architecture changes, update `docs/design.md` and `docs/diagram-*.mermaid`.
 5. Enforce the “two follow-up questions then stop” AI flow server-side.
 6. Apply the no-emoji rule across UI, AI outputs, emails, and commit messages.
-7. Setup page now requires PAT validation before submission, offers a searchable repo picker (hides archived repos), validates maintainer email format, supports press-and-hold PAT reveal, and presents a confirmation summary modal prior to submitting.
+7. Setup page requires PAT validation before submission, offers a searchable repo picker (hides archived repos), supports press-and-hold PAT reveal, and presents a confirmation summary modal prior to submitting. Email is not collected.
 8. Header uses the `@logo_white.png` asset and footer must include Lion Mystic copyright link, author credit ("Built by" + linked Spencer Francisco with X icon), X contact, and mission statement separated by bullet glyphs.
 
 ## Example Snippets

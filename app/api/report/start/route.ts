@@ -5,20 +5,19 @@ import { convexReportStart } from "@/lib/convex";
 export async function POST(req: NextRequest) {
   try {
     assertEnv();
-    const { slug, name, email, description } = (await req.json()) as {
+    const { slug, name, description } = (await req.json()) as {
       slug?: string;
       name?: string;
-      email?: string;
       description?: string;
     };
-    if (!slug || !name || !email || !description) {
+    if (!slug || !name || !description) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
-    const result = await convexReportStart({ slug, name, email, description });
+    const result = await convexReportStart({ slug, name, description });
     return NextResponse.json(result);
   } catch (e: any) {
     const message = String(e?.message || "Internal error");
-    const status = /Too many reports|Invalid email|Missing/.test(message) ? 400 : 500;
+    const status = /Too many reports|Missing/.test(message) ? 400 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }

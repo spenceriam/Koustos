@@ -2,10 +2,7 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { decryptString } from "./encryption";
-import { Resend } from "resend";
 import { removeEmojis } from "../lib/noEmoji";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const submit = action({
   args: { reportId: v.id("reports"), editMarkdown: v.optional(v.string()) },
@@ -41,25 +38,7 @@ export const submit = action({
 
     await ctx.db.patch(reportId, { github_issue_number: json.number });
 
-    // Emails (no emojis)
-    const toMaintainer = {
-      from: "bugs@koustos.dev",
-      to: project.maintainer_email,
-      subject: `New bug: ${title}`,
-      html: `<h2>New Issue Created</h2><p><strong>Reporter:</strong> ${report.reporter_name}</p><a href="${json.html_url}">View Issue #${json.number} on GitHub</a>`,
-    } as const;
-
-    const toReporter = {
-      from: "bugs@koustos.dev",
-      to: report.reporter_email,
-      subject: "Bug report submitted",
-      html: `<h2>Thank You</h2><p>Your bug report has been submitted.</p><a href="${json.html_url}">Track on GitHub</a>`,
-    } as const;
-
-    await Promise.allSettled([
-      resend.emails.send(toMaintainer as any),
-      resend.emails.send(toReporter as any),
-    ]);
+    // Email sending removed for MVP scale-back
 
     return { issueUrl: json.html_url };
   },

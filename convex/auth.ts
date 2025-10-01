@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { magicLink } from "better-auth/plugins";
+import { password } from "better-auth/plugins";
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { components } from "./betterAuthComponent/_generated/api";
@@ -48,20 +48,15 @@ export const createAuth = (ctx: GenericCtx<typeof components.betterAuth>) => {
     logger: { disabled: true },
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
-    magicLink: magicLink({
-      sendMagicLink: async ({ email, url }) => {
-        await sendMagicLink({ email, url });
-      },
+    password: password({
+      requireEmailVerification: false,
+      minPasswordLength: 8,
     }),
     socialProviders: {
       google: {
         clientId: googleClientId,
         clientSecret: googleClientSecret,
         scope: ["email", "profile"],
-      },
-      github: {
-        clientId: githubClientId,
-        clientSecret: githubClientSecret,
       },
     },
     plugins: [crossDomain({ siteUrl }), convex()],

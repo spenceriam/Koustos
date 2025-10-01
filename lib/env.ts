@@ -2,7 +2,6 @@ const required = [
   "NEXT_PUBLIC_URL",
   "ENCRYPTION_KEY",
   "OPENAI_API_KEY",
-  "RESEND_API_KEY",
 ];
 
 export function assertEnv() {

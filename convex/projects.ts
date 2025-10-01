@@ -18,12 +18,8 @@ export const createProject = mutation({
     userId: v.id("user"),
     pat: v.string(),
     repo: v.string(),
-    email: v.string(),
   },
-  handler: async (ctx, { userId, pat, repo, email }) => {
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      throw new Error("Invalid email");
-    }
+  handler: async (ctx, { userId, pat, repo }) => {
 
     const [owner, name] = repo.split("/");
     if (!owner || !name) {
@@ -47,7 +43,6 @@ export const createProject = mutation({
       github_pat_encrypted: encryptedPat,
       repo_owner: owner,
       repo_name: name,
-      maintainer_email: email,
       created_at: now,
     });
 
@@ -56,7 +51,6 @@ export const createProject = mutation({
       project_id: projectId,
       repo_full_name: `${owner}/${name}`,
       slug,
-      maintainer_email_snapshot: email,
       created_at: now,
     });
 

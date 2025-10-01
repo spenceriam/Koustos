@@ -5,19 +5,18 @@ import { convexCreateProject } from "@/lib/convex";
 export async function POST(req: NextRequest) {
   try {
     assertEnv();
-    const { pat, repo, email } = (await req.json()) as {
+    const { pat, repo } = (await req.json()) as {
       pat?: string;
       repo?: string;
-      email?: string;
     };
-    if (!pat || !repo || !email) {
+    if (!pat || !repo) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
-    const { url } = await convexCreateProject({ pat, repo, email });
+    const { url } = await convexCreateProject({ pat, repo });
     return NextResponse.json({ url });
   } catch (e: any) {
     const message = String(e?.message || "Internal error");
-    const status = /Invalid PAT|Invalid repo|Invalid email|Missing/.test(message) ? 400 : 500;
+    const status = /Invalid PAT|Invalid repo|Missing/.test(message) ? 400 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }
