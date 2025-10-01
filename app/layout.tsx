@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { Suspense } from "react";
+import HeaderActions from "@/components/HeaderActions";
 import "./globals.css";
 import logoWhite from "@/assets/@logo_white.png";
 import { ToastProvider } from "@/components/Toast";
@@ -92,53 +91,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </AuthProvider>
       </body>
     </html>
-  );
-}
-
-function HeaderActions() {
-  // We can’t use hooks in this file server-side for auth; render simple links for MVP
-  return (
-    <div className="flex items-center gap-2">
-      <Link href="/" className="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-white">
-        Home
-      </Link>
-      <Link href="/setup" className="rounded bg-[var(--fg)] px-3 py-1.5 text-xs font-medium text-white">
-        Get URL
-      </Link>
-      <ProfileMenu />
-    </div>
-  );
-}
-
-function ProfileMenu() {
-  // MVP: show initials circle with a simple dropdown on focus/hover using details/summary
-  return (
-    <details className="relative">
-      <summary className="list-none cursor-pointer select-none">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-semibold text-white">
-          SF
-        </span>
-      </summary>
-      <div className="absolute right-0 z-50 mt-2 w-48 rounded border bg-white p-1 text-sm shadow">
-        <Link href="/setup" className="block rounded px-3 py-2 hover:bg-slate-50">Generate new URL</Link>
-        <button
-          type="button"
-          className="block w-full rounded px-3 py-2 text-left hover:bg-slate-50"
-          onClick={() => {
-            const modal = document.getElementById("feedback-modal");
-            if (modal) (modal as HTMLDialogElement).showModal?.();
-          }}
-        >
-          Feedback
-        </button>
-        <button
-          type="button"
-          className="block w-full rounded px-3 py-2 text-left hover:bg-slate-50"
-          onClick={() => authClient.signOut()}
-        >
-          Sign out
-        </button>
-      </div>
-    </details>
   );
 }
