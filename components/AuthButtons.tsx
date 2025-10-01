@@ -71,9 +71,6 @@ export function AuthButtons() {
           Continue with Google
         </button>
       </div>
-      <button type="button" onClick={signOut} className="text-sm text-slate-500 underline">
-        Sign out
-      </button>
     </div>
   );
 }
