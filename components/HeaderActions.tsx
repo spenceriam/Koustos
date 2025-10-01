@@ -19,6 +19,7 @@ function getInitials(name?: string, email?: string): string {
 
 export default function HeaderActions() {
   const [initials, setInitials] = useState<string>("SF");
+  const [isAuthed, setIsAuthed] = useState<boolean>(false);
 
   useEffect(() => {
     let mounted = true;
@@ -28,14 +29,19 @@ export default function HeaderActions() {
         if (!mounted) return;
         const init = getInitials(session?.user?.name as string, session?.user?.email as string);
         setInitials(init);
+        setIsAuthed(!!session?.user?.id);
       } catch {
-        if (mounted) setInitials("SF");
+        if (mounted) {
+          setInitials("SF");
+          setIsAuthed(false);
+        }
       }
     }
     load();
     const unsub = authClient.session?.subscribe?.((session: any) => {
       const init = getInitials(session?.user?.name as string, session?.user?.email as string);
       setInitials(init);
+      setIsAuthed(!!session?.user?.id);
     });
     return () => {
       if (typeof unsub === "function") {
@@ -53,6 +59,7 @@ export default function HeaderActions() {
       <Link href="/setup" className="rounded bg-[var(--fg)] px-3 py-1.5 text-xs font-medium text-white">
         Get URL
       </Link>
+      {isAuthed && (
       <details className="relative">
         <summary className="list-none cursor-pointer select-none">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-semibold text-white">
@@ -80,6 +87,7 @@ export default function HeaderActions() {
           </button>
         </div>
       </details>
+      )}
     </div>
   );
 }
