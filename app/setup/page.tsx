@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AuthButtons } from "@/components/AuthButtons";
+import { authClient } from "@/lib/auth-client";
 
 interface GithubRepoSummary {
   id: number;
@@ -15,6 +16,7 @@ interface GithubReposResponse {
 }
 
 export default function SetupPage() {
+  const [isAuthed, setIsAuthed] = useState(false);
   const [pat, setPat] = useState("");
   const [repo, setRepo] = useState("");
   const [result, setResult] = useState<string | null>(null);
@@ -34,7 +36,28 @@ export default function SetupPage() {
   const [showSummary, setShowSummary] = useState(false);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Email removed from setup requirements; no prefill needed
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const session = await authClient.session.get();
+        if (!mounted) return;
+        setIsAuthed(!!session?.user?.id);
+      } catch {
+        if (mounted) setIsAuthed(false);
+      }
+    }
+    load();
+    const unsub = authClient.session?.subscribe?.((session: any) => {
+      setIsAuthed(!!session?.user?.id);
+    });
+    return () => {
+      if (typeof unsub === "function") {
+        try { unsub(); } catch {}
+      }
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (showPatModal) {
@@ -227,15 +250,16 @@ export default function SetupPage() {
       <div className="mx-auto max-w-xl">
         <h1 className="mb-2 text-2l font-semibold">Get Your Feedback URL</h1>
         <p className="mb-6 text-sm text-slate-600">Signed-in maintainers can re-generate feedback URLs and manage their repositories.</p>
-        <div className="mb-6 rounded border bg-white p-4">
-          <h2 className="text-sm font-semibold">Maintainer sign-in</h2>
-          <p className="mt-1 text-xs text-slate-600">
-            Sign in to access your repositories. Email is not required for URL generation.
-          </p>
-          <div className="mt-3">
-            <AuthButtons />
+        {!isAuthed && (
+          <div className="mb-6 rounded border bg-white p-4">
+            <h2 className="text-sm font-semibold">Maintainer sign-in</h2>
+            <p className="mt-1 text-xs text-slate-600">Create an account or sign in to continue.</p>
+            <div className="mt-3">
+              <AuthButtons />
+            </div>
           </div>
-        </div>
+        )}
+        {isAuthed && (
         <form onSubmit={onSubmit} className="space-y-4" aria-busy={loading}>
           <div>
             <label className="mb-1 block text-sm font-medium">
@@ -371,6 +395,7 @@ export default function SetupPage() {
             {loading ? "Generating..." : "Generate Feedback URL"}
           </button>
         </form>
+        )}
         {error && (
           <p className="mt-3 text-sm text-red-600" role="alert" aria-live="assertive">
             {error}

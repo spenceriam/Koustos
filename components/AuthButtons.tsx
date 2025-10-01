@@ -3,23 +3,40 @@
 import { authClient } from "@/lib/auth-client";
 
 export function AuthButtons() {
+  const [error, setError] = useState<string>("");
   async function signIn(provider: "google" | "github") {
     await authClient.signIn.social({ provider });
   }
 
   async function passwordSignIn(formData: FormData) {
+    setError("");
     const email = formData.get("email");
     const password = formData.get("password");
     if (typeof email === "string" && typeof password === "string") {
-      await authClient.signIn.password({ email, password });
+      try {
+        await authClient.signIn.password({ email, password });
+      } catch (err: any) {
+        const msg = String(err?.message || "");
+        // If account does not exist, guide the user to sign up
+        if (/not\s*found|no\s*user|does\s*not\s*exist/i.test(msg)) {
+          setError("Account not found. Please create an account below.");
+        } else {
+          setError("Sign in failed. Check your credentials or create an account.");
+        }
+      }
     }
   }
 
   async function passwordSignUp(formData: FormData) {
+    setError("");
     const email = formData.get("email");
     const password = formData.get("password");
     if (typeof email === "string" && typeof password === "string") {
-      await authClient.signUp.password({ email, password });
+      try {
+        await authClient.signUp.password({ email, password });
+      } catch (err: any) {
+        setError("Sign up failed. Try a different email or password.");
+      }
     }
   }
 
@@ -41,6 +58,9 @@ export function AuthButtons() {
         <input type="password" name="password" required className="w-full rounded border px-3 py-2" placeholder="Choose a password" />
         <button type="submit" className="rounded border px-3 py-2">Sign up</button>
       </form>
+      {error && (
+        <p className="text-xs text-red-600" role="alert" aria-live="assertive">{error}</p>
+      )}
       <div className="flex gap-2">
         <button
           type="button"
