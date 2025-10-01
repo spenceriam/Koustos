@@ -72,20 +72,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </footer>
             <dialog id="feedback-modal" className="rounded border p-0">
-              <div className="w-[min(90vw,460px)] p-4">
+              <form method="dialog" className="w-[min(90vw,460px)] p-4">
                 <h3 className="text-lg font-semibold">Feedback</h3>
                 <p className="mt-2 text-sm text-slate-700">
                   Questions? Reach out to Spencer Francisco via <a className="underline" href="https://x.com/spencer_i_am" target="_blank" rel="noreferrer">X.com</a> or email via <a className="underline" href="https://lionmystic.com" target="_blank" rel="noreferrer">lionmystic.com</a>.
                 </p>
                 <div className="mt-4 text-right">
-                  <button
-                    className="rounded border px-3 py-1.5 text-sm"
-                    onClick={() => (document.getElementById("feedback-modal") as HTMLDialogElement)?.close?.()}
-                  >
-                    Close
-                  </button>
+                  <button className="rounded border px-3 py-1.5 text-sm" value="close">Close</button>
                 </div>
-              </div>
+              </form>
             </dialog>
           </ToastProvider>
         </AuthProvider>
