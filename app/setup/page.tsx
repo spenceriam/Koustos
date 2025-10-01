@@ -381,4 +381,15 @@ export default function SetupPage() {
           </p>
         )}
         {result && (
-          <div className="mt-6 rounded border penteel】【“】【```
+          <div className="mt-6 rounded border p-4">
+            <h2 className="text-sm font-semibold">Your feedback URL</h2>
+            <p className="mt-1 text-xs text-slate-600">Share this link with reporters to collect issues.</p>
+            <div className="mt-3">
+              <code className="block rounded bg-slate-100 p-2 text-sm">{result}</code>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

@@ -20,9 +20,9 @@ export async function convexCreateProject(args: {
   const client = getClient();
   const res = (await client.mutation("projects:createProject", args)) as {
     slug: string;
-    url: string;
   };
-  return res;
+  const urlBase = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  return { slug: res.slug, url: `${urlBase}/f/${res.slug}` };
 }
 
 export async function convexReportStart(args: {
