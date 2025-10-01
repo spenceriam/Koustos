@@ -5,17 +5,14 @@ import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { components } from "./betterAuthComponent/_generated/api";
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { sendMagicLink } from "./magicLink";
+// Magic link disabled in MVP
 
 const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const githubClientId = process.env.GITHUB_CLIENT_ID;
-const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
+// GitHub OAuth disabled in MVP
 
-if (!googleClientId || !googleClientSecret) {
-  throw new Error("Google OAuth credentials are missing in Convex env");
-}
+// In dev, allow running without Google OAuth by omitting the provider
 if (!githubClientId || !githubClientSecret) {
   throw new Error("GitHub OAuth credentials are missing in Convex env");
 }
@@ -52,13 +49,16 @@ export const createAuth = (ctx: GenericCtx<typeof components.betterAuth>) => {
       requireEmailVerification: false,
       minPasswordLength: 8,
     }),
-    socialProviders: {
-      google: {
-        clientId: googleClientId,
-        clientSecret: googleClientSecret,
-        scope: ["email", "profile"],
-      },
-    },
+    socialProviders:
+      googleClientId && googleClientSecret
+        ? {
+            google: {
+              clientId: googleClientId,
+              clientSecret: googleClientSecret,
+              scope: ["email", "profile"],
+            },
+          }
+        : {},
     plugins: [crossDomain({ siteUrl }), convex()],
   });
 };
