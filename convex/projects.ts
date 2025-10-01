@@ -15,7 +15,7 @@ export const getBySlug = query({
 
 export const createProject = mutation({
   args: {
-    userId: v.id("user"),
+    userId: v.optional(v.id("user")),
     pat: v.string(),
     repo: v.string(),
   },
@@ -38,7 +38,7 @@ export const createProject = mutation({
     const now = Date.now();
 
     const projectId = await ctx.db.insert("projects", {
-      user_id: userId,
+      user_id: userId ?? undefined,
       slug,
       github_pat_encrypted: encryptedPat,
       repo_owner: owner,
@@ -47,7 +47,7 @@ export const createProject = mutation({
     });
 
     await ctx.db.insert("shareable_urls", {
-      user_id: userId,
+      user_id: userId ?? undefined,
       project_id: projectId,
       repo_full_name: `${owner}/${name}`,
       slug,

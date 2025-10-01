@@ -6,7 +6,7 @@ export default defineSchema({
   ...authTables,
 
   projects: defineTable({
-    user_id: v.id("user"),
+    user_id: v.optional(v.id("user")),
     slug: v.string(),
     github_pat_encrypted: v.string(),
     repo_owner: v.string(),
@@ -19,7 +19,7 @@ export default defineSchema({
     .index("by_user_repo", ["user_id", "repo_owner", "repo_name"]),
 
   shareable_urls: defineTable({
-    user_id: v.id("user"),
+    user_id: v.optional(v.id("user")),
     project_id: v.id("projects"),
     repo_full_name: v.string(),
     slug: v.string(),

@@ -21,14 +21,16 @@ export function useAuthenticatedEmail() {
     }
 
     loadSession();
-    const unsubscribe = authClient.session.subscribe((session) => {
+    const maybeUnsub = authClient.session?.subscribe?.((session: any) => {
       if (!mounted) return;
       setEmail(session?.user?.email ?? "");
     });
 
     return () => {
       mounted = false;
-      unsubscribe();
+      if (typeof maybeUnsub === "function") {
+        try { maybeUnsub(); } catch {}
+      }
     };
   }, []);
 

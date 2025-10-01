@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAuthenticatedEmail } from "./auth.client";
 import { AuthButtons } from "@/components/AuthButtons";
 
 interface GithubRepoSummary {
@@ -18,7 +17,6 @@ interface GithubReposResponse {
 export default function SetupPage() {
   const [pat, setPat] = useState("");
   const [repo, setRepo] = useState("");
-  const authenticatedEmail = useAuthenticatedEmail();
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +34,7 @@ export default function SetupPage() {
   const [showSummary, setShowSummary] = useState(false);
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
-    /* email removed from setup requirements */
-  }, [authenticatedEmail]);
+  // Email removed from setup requirements; no prefill needed
 
   useEffect(() => {
     if (showPatModal) {
