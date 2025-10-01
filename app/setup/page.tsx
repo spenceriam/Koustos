@@ -37,18 +37,17 @@ export default function SetupPage() {
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null);
 
   async function postJson(url: string, payload: unknown) {
-    const opts: RequestInit = {
+    const headers = new Headers();
+    headers.set("Content-Type", "application/json");
+    const req = new Request(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(payload),
-    };
-    if (typeof (opts as any).method !== "string") {
-      (opts as any).method = "POST";
-    }
+    });
     // Debugging aid
     // eslint-disable-next-line no-console
-    console.debug("POST", url, opts);
-    return await window.fetch(url, opts);
+    console.debug("POST", url);
+    return await fetch(req);
   }
 
   useEffect(() => {
@@ -118,11 +117,6 @@ export default function SetupPage() {
     setShowSummary(false);
 
     try {
-      const opts: RequestInit = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pat }),
-      };
       const response = await postJson("/api/github/repos", { pat });
 
       if (response.status === 401) {
@@ -180,11 +174,6 @@ export default function SetupPage() {
     setPatVisible(false);
 
     try {
-      const opts: RequestInit = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pat, repo }),
-      };
       const res = await postJson("/api/setup", { pat, repo });
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as { url: string };
